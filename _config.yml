@@ -9,17 +9,15 @@ baseurl: ""
 
 # Where the source of truth for each service lives. Adding a service means
 # adding one file to _services/ — nothing here needs to change.
+#
+# `output: false` on purpose: a service card links straight at the service
+# itself (via `link`), so there is no in-between description page and no
+# /services/<name>/ URL to sit in front of the real thing. A service hosted
+# on this site lives at its own short path — /boilerplater/, not
+# /services/boilerplater/.
 collections:
   services:
-    output: true
-    permalink: /services/:name/
-
-defaults:
-  - scope:
-      path: ""
-      type: services
-    values:
-      layout: service
+    output: false
 
 # Ordered list of the status values a service may declare. The order here is
 # the order services are sorted in on the index; `label` is what a visitor sees.
