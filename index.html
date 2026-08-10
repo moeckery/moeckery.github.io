@@ -1,0 +1,34 @@
+---
+layout: default
+title: moeckery
+---
+
+<section class="hero wrap">
+  <h1>{{ site.tagline }}</h1>
+  <p>{{ site.description }}</p>
+</section>
+
+<section class="wrap">
+  <h2 class="section-title">Services</h2>
+
+  <ul class="grid">
+    {%- for s in site.statuses -%}
+      {%- assign group = site.services | where: "status", s.id | sort: "title" -%}
+      {%- for service in group -%}
+        {% include service-card.html service=service %}
+      {%- endfor -%}
+    {%- endfor -%}
+
+    {%- comment -%}
+      Anything declaring a status that isn't in _config.yml still gets listed,
+      at the end, rather than vanishing from the site.
+    {%- endcomment -%}
+    {%- for service in site.services -%}
+      {%- assign known = false -%}
+      {%- for s in site.statuses -%}{%- if s.id == service.status -%}{%- assign known = true -%}{%- endif -%}{%- endfor -%}
+      {%- unless known -%}
+        {% include service-card.html service=service %}
+      {%- endunless -%}
+    {%- endfor -%}
+  </ul>
+</section>

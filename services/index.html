@@ -1,0 +1,47 @@
+---
+layout: default
+title: Services
+description: Every service run under the moeckery name, grouped by status.
+permalink: /services/
+---
+
+<section class="hero wrap">
+  <h1>Services</h1>
+  <p>{{ page.description }}</p>
+</section>
+
+{%- for s in site.statuses -%}
+  {%- assign group = site.services | where: "status", s.id | sort: "title" -%}
+  {%- if group.size > 0 -%}
+    <section class="wrap">
+      <h2 class="section-title">{{ s.label }} <span class="section-title__note">{{ s.blurb }}</span></h2>
+      <ul class="grid">
+        {%- for service in group -%}
+          {% include service-card.html service=service %}
+        {%- endfor -%}
+      </ul>
+    </section>
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign orphans = 0 -%}
+{%- for service in site.services -%}
+  {%- assign known = false -%}
+  {%- for s in site.statuses -%}{%- if s.id == service.status -%}{%- assign known = true -%}{%- endif -%}{%- endfor -%}
+  {%- unless known -%}{%- assign orphans = orphans | plus: 1 -%}{%- endunless -%}
+{%- endfor -%}
+
+{%- if orphans > 0 -%}
+  <section class="wrap">
+    <h2 class="section-title">Other</h2>
+    <ul class="grid">
+      {%- for service in site.services -%}
+        {%- assign known = false -%}
+        {%- for s in site.statuses -%}{%- if s.id == service.status -%}{%- assign known = true -%}{%- endif -%}{%- endfor -%}
+        {%- unless known -%}
+          {% include service-card.html service=service %}
+        {%- endunless -%}
+      {%- endfor -%}
+    </ul>
+  </section>
+{%- endif -%}

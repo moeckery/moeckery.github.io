@@ -1,0 +1,48 @@
+---
+layout: default
+---
+<article class="service wrap">
+
+  <p class="crumb"><a href="{{ '/services/' | relative_url }}">&larr; All services</a></p>
+
+  <header class="service__head">
+    <div class="service__title">
+      <h1>{{ page.title }}</h1>
+      {% include status.html status=page.status %}
+    </div>
+    {% if page.tagline %}<p class="service__tagline">{{ page.tagline }}</p>{% endif %}
+    {% if page.link %}
+      <p><a class="btn" href="{{ page.link }}" rel="noopener">{{ page.domain | default: page.link }}</a></p>
+    {% elsif page.domain %}
+      <p class="service__domain-flat">{{ page.domain }}</p>
+    {% endif %}
+  </header>
+
+  <div class="service__body">
+    <div class="prose">
+      {{ content }}
+    </div>
+
+    <aside class="facts">
+      <h2 class="facts__title">At a glance</h2>
+      <dl>
+        {% if page.domain %}
+          <dt>Domain</dt>
+          <dd>{% if page.link %}<a href="{{ page.link }}" rel="noopener">{{ page.domain }}</a>{% else %}{{ page.domain }}{% endif %}</dd>
+        {% endif %}
+        <dt>Status</dt>
+        {%- assign match = site.statuses | where: "id", page.status | first -%}
+        <dd>{% if match %}{{ match.label }} — {{ match.blurb }}{% else %}{{ page.status }}{% endif %}</dd>
+        {% if page.launched %}
+          <dt>Launched</dt>
+          <dd>{{ page.launched }}</dd>
+        {% endif %}
+        {% if page.repo %}
+          <dt>Source</dt>
+          <dd><a href="{{ page.repo }}" rel="noopener">{{ page.repo | remove: "https://github.com/" }}</a></dd>
+        {% endif %}
+      </dl>
+    </aside>
+  </div>
+
+</article>
