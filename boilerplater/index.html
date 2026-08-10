@@ -1,0 +1,2984 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Boilerplater</title>
+  <style>
+    :root { color-scheme: light; --background: #fafafa; --foreground: #18181b; --card: #ffffff; --card-foreground: #18181b; --popover: #ffffff; --muted: #f4f4f5; --muted-foreground: #71717a; --accent: #f4f4f5; --accent-foreground: #18181b; --primary: #18181b; --primary-foreground: #fafafa; --border: #e4e4e7; --input: #e4e4e7; --ring: #a1a1aa; --danger: #dc2626; --danger-soft: #fef2f2; --warning: #b45309; --warning-soft: #fffbeb; --success: #15803d; --blue: #2563eb; --blue-soft: #eff6ff; --syntax-key: #2563eb; --syntax-string: #15803d; --syntax-number: #c2410c; --syntax-boolean: #7c3aed; --syntax-keyword: #9333ea; --syntax-variable: #087f8c; --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.04); --radius: 10px; --header-height: 58px; --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+    html[data-theme="dark"] { color-scheme: dark; --background: #09090b; --foreground: #fafafa; --card: #111113; --card-foreground: #fafafa; --popover: #18181b; --muted: #202023; --muted-foreground: #a1a1aa; --accent: #27272a; --accent-foreground: #fafafa; --primary: #fafafa; --primary-foreground: #18181b; --border: #2e2e32; --input: #3f3f46; --ring: #71717a; --danger: #f87171; --danger-soft: #2b1618; --warning: #fbbf24; --warning-soft: #2b2313; --success: #4ade80; --blue: #60a5fa; --blue-soft: #15233b; --syntax-key: #60a5fa; --syntax-string: #4ade80; --syntax-number: #fb923c; --syntax-boolean: #c4b5fd; --syntax-keyword: #e879f9; --syntax-variable: #67e8f9; --shadow: 0 1px 2px rgb(0 0 0 / 0.25), 0 12px 32px rgb(0 0 0 / 0.22); }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; overflow: hidden; background: var(--background); color: var(--foreground); font-family: var(--font-sans); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+    button, input, textarea, select { font: inherit; }
+    button { color: inherit; }
+    ::selection { background: color-mix(in srgb, var(--blue) 24%, transparent); }
+    .hidden { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .topbar { height: var(--header-height); display: flex; align-items: center; gap: 12px; padding: 0 16px; background: color-mix(in srgb, var(--card) 92%, transparent); border-bottom: 1px solid var(--border); backdrop-filter: blur(16px); position: relative; z-index: 20; }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 170px; }
+    .brand-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--foreground); color: var(--background); display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12); }
+    .brand-mark svg { width: 17px; height: 17px; }
+    .brand-title { font-weight: 650; letter-spacing: -0.015em; }
+    .header-center { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
+    .header-actions { min-width: 170px; display: flex; justify-content: flex-end; align-items: center; gap: 7px; }
+    .config-title { max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted-foreground); font-size: 12px; }
+    .dirty-dot { display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 999px; background: var(--warning); vertical-align: 1px; }
+    .button { min-height: 34px; border: 1px solid var(--border); border-radius: 8px; padding: 0 11px; background: var(--card); color: var(--foreground); display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-weight: 560; font-size: 12px; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 1px rgb(0 0 0 / 0.025); transition: background 120ms ease, border-color 120ms ease, transform 80ms ease; }
+    .button:hover { background: var(--accent); }
+    .button:active { transform: translateY(1px); }
+    .button:focus-visible, .icon-button:focus-visible, input:focus-visible,
+    textarea:focus-visible, select:focus-visible, .tree-row:focus-visible,
+    .drop-zone:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    .button.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+    .button.primary:hover { opacity: 0.9; }
+    .button.ghost { background: transparent; border-color: transparent; box-shadow: none; }
+    .button.ghost:hover { background: var(--accent); }
+    .button.danger { color: var(--danger); }
+    .button.small { min-height: 29px; padding: 0 8px; font-size: 11px; border-radius: 7px; }
+    .button.wide { width: 100%; }
+    .button svg, .icon-button svg { width: 15px; height: 15px; flex: none; }
+    .button:disabled, .icon-button:disabled { opacity: 0.42; cursor: not-allowed; transform: none; }
+    .icon-button { width: 34px; height: 34px; padding: 0; display: inline-grid; place-items: center; border: 1px solid transparent; border-radius: 8px; background: transparent; cursor: pointer; }
+    .icon-button:hover { background: var(--accent); }
+    .segmented { display: inline-flex; align-items: center; padding: 3px; border-radius: 9px; background: var(--muted); border: 1px solid var(--border); }
+    .segment { min-height: 27px; padding: 0 12px; border: 0; background: transparent; color: var(--muted-foreground); border-radius: 6px; font-size: 11px; font-weight: 620; cursor: pointer; }
+    .segment.active { background: var(--card); color: var(--foreground); box-shadow: 0 1px 3px rgb(0 0 0 / 0.09); }
+    .welcome { height: calc(100vh - var(--header-height)); overflow: auto; display: grid; place-items: center; padding: 40px 20px; background: radial-gradient(circle at 50% 15%, color-mix(in srgb, var(--blue) 7%, transparent), transparent 34%),
+        var(--background); }
+    .welcome-shell { width: min(820px, 100%); }
+    .welcome-heading { text-align: center; margin-bottom: 24px; }
+    .welcome-heading h1 { margin: 0; font-size: clamp(28px, 5vw, 40px); line-height: 1.08; letter-spacing: -0.042em; font-weight: 710; }
+    .welcome-heading p { max-width: 540px; margin: 12px auto 0; color: var(--muted-foreground); font-size: 14px; }
+    .start-card { border: 1px solid var(--border); border-radius: 14px; background: var(--card); box-shadow: var(--shadow); padding: 20px; }
+    .drop-zone { width: 100%; min-height: 210px; border: 1.5px dashed var(--input); border-radius: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 28px; background: color-mix(in srgb, var(--muted) 46%, transparent); cursor: pointer; transition: border-color 150ms ease, background 150ms ease, transform 150ms ease; }
+    .drop-zone:hover, .drop-zone.dragging { border-color: var(--foreground); background: var(--muted); }
+    .drop-zone.dragging { transform: scale(1.005); }
+    .drop-icon { width: 42px; height: 42px; display: grid; place-items: center; margin-bottom: 12px; border: 1px solid var(--border); background: var(--card); border-radius: 10px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); }
+    .drop-icon svg { width: 20px; height: 20px; }
+    .drop-zone strong { font-size: 13px; }
+    .drop-zone span { margin-top: 5px; color: var(--muted-foreground); font-size: 12px; }
+    .or-row { display: flex; align-items: center; gap: 12px; color: var(--muted-foreground); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin: 17px 0; }
+    .or-row::before, .or-row::after { content: ""; height: 1px; background: var(--border); flex: 1; }
+    .start-actions { display: grid; gap: 10px; }
+    .start-action { width: 100%; text-align: left; min-height: 70px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); cursor: pointer; color: inherit; display: flex; align-items: center; gap: 12px; }
+    .start-action:hover { background: var(--accent); }
+    .start-action-copy { min-width: 0; flex: 1; }
+    .start-action-icon { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 8px; background: var(--muted); }
+    .start-action-icon svg { width: 16px; height: 16px; }
+    .start-action-arrow { color: var(--muted-foreground); font-size: 16px; }
+    .start-action-copy strong { display: block; font-size: 12px; margin-bottom: 2px; }
+    .start-action-copy > span { display: block; color: var(--muted-foreground); font-size: 11px; line-height: 1.45; }
+    .text-button { width: 100%; margin-top: 12px; padding: 6px; border: 0; background: transparent; color: var(--muted-foreground); font-size: 11px; cursor: pointer; }
+    .text-button:hover { color: var(--foreground); text-decoration: underline; text-underline-offset: 3px; }
+    .workspace { height: calc(100vh - var(--header-height)); display: grid; min-height: 0; background: var(--background); }
+    .workspace.configure { grid-template-columns: 280px minmax(380px, 1fr) 300px; }
+    .workspace.fill, .workspace.viewer { grid-template-columns: 320px 280px minmax(400px, 1fr); }
+    .pane { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--card); overflow: hidden; }
+    .pane + .pane { border-left: 1px solid var(--border); }
+    .pane-header { min-height: 52px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--border); background: var(--card); }
+    .pane-heading { min-width: 0; }
+    .pane-title { font-size: 12px; font-weight: 650; line-height: 1.25; }
+    .pane-subtitle { margin-top: 2px; color: var(--muted-foreground); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pane-actions { display: flex; align-items: center; gap: 3px; flex: none; }
+    .pane-body { min-height: 0; flex: 1; overflow: auto; }
+    .pane-footer { min-height: 34px; padding: 6px 11px; display: flex; align-items: center; justify-content: space-between; color: var(--muted-foreground); font-size: 10px; border-top: 1px solid var(--border); background: var(--card); }
+    .tree-wrap { padding: 7px; }
+    .add-menu { position: relative; }
+    .add-menu > summary { list-style: none; }
+    .add-menu > summary::-webkit-details-marker { display: none; }
+    .menu-popover { position: absolute; top: calc(100% + 6px); right: 0; z-index: 40; width: 150px; padding: 5px; display: grid; gap: 2px; border: 1px solid var(--border); border-radius: 9px; background: var(--popover); box-shadow: var(--shadow); }
+    .menu-item { width: 100%; min-height: 32px; padding: 0 8px; border: 0; border-radius: 6px; display: flex; align-items: center; gap: 8px; background: transparent; color: var(--foreground); font-size: 11px; text-align: left; cursor: pointer; }
+    .menu-item:hover { background: var(--accent); }
+    .menu-item svg { width: 14px; height: 14px; color: var(--muted-foreground); }
+    .tree-row { width: 100%; min-height: 30px; display: flex; align-items: center; gap: 6px; padding: 3px 7px; border: 1px solid transparent; border-radius: 7px; color: var(--foreground); cursor: pointer; user-select: none; }
+    .tree-row:hover { background: var(--accent); }
+    .tree-row.selected { background: var(--muted); border-color: var(--border); }
+    .tree-row.output-selected { background: var(--blue-soft); color: var(--blue); }
+    .tree-indent { flex: none; width: calc(var(--depth, 0) * 15px); }
+    .tree-toggle { width: 16px; height: 18px; padding: 0; border: 0; background: transparent; display: grid; place-items: center; flex: none; color: var(--muted-foreground); cursor: pointer; }
+    span.tree-toggle { cursor: default; }
+    .tree-toggle svg { width: 12px; height: 12px; transition: transform 120ms ease; }
+    .tree-toggle.open svg { transform: rotate(90deg); }
+    .tree-icon { width: 16px; height: 16px; display: grid; place-items: center; flex: none; color: var(--muted-foreground); }
+    .tree-icon svg { width: 15px; height: 15px; }
+    .file-icon-host { display: contents; }
+    .file-icon-stack,
+    .file-icon-fallback { width: 16px; height: 16px; display: grid; place-items: center; }
+    .file-icon-stack { position: relative; }
+    .file-icon-fallback,
+    .file-type-icon { grid-area: 1 / 1; transition: opacity 120ms ease; }
+    .file-type-icon { display: block; width: 16px; height: 16px; object-fit: contain; opacity: 0; }
+    .file-icon-stack.loaded .file-icon-fallback { opacity: 0; }
+    .file-icon-stack.loaded .file-type-icon { opacity: 1; }
+    .tree-icon.compute { color: #8b5cf6; }
+    .tree-name { min-width: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; font-family: var(--font-mono); font-size: 11px; }
+    .tree-badge { border: 1px solid var(--border); border-radius: 999px; padding: 1px 5px; color: var(--muted-foreground); font-size: 8px; font-family: var(--font-sans); text-transform: uppercase; letter-spacing: 0.04em; }
+    .empty-state { min-height: 100%; display: grid; place-items: center; text-align: center; padding: 28px; color: var(--muted-foreground); }
+    .empty-state-inner { max-width: 280px; }
+    .empty-state-icon { width: 42px; height: 42px; display: grid; place-items: center; margin: 0 auto 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--muted); }
+    .empty-state-icon svg { width: 19px; height: 19px; }
+    .empty-state strong { display: block; color: var(--foreground); font-size: 12px; margin-bottom: 5px; }
+    .empty-state p { margin: 0 0 14px; font-size: 11px; }
+    .editor-shell { height: 100%; display: flex; flex-direction: column; }
+    .editor-toolbar { min-height: 38px; padding: 6px 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--muted) 45%, var(--card)); }
+    .editor-path { min-width: 0; flex: 1; color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-mono); font-size: 10px; }
+    .code-editor { flex: 1; width: 100%; min-height: 0; resize: none; border: 0; border-radius: 0; padding: 18px 20px 80px; background: var(--card); color: var(--card-foreground); font-family: var(--font-mono); font-size: 12px; line-height: 1.65; tab-size: 2; outline: none !important; white-space: pre; overflow: auto; }
+    .file-properties { padding: 13px 16px; border-bottom: 1px solid var(--border); }
+    .file-properties .field { margin: 0; }
+    .detail-view { padding: 18px; max-width: 680px; }
+    .detail-card { border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 15px; margin-bottom: 12px; }
+    .detail-card h3 { margin: 0 0 4px; font-size: 12px; }
+    .detail-card p { margin: 0; color: var(--muted-foreground); font-size: 11px; }
+    .detail-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+    .field { display: grid; gap: 6px; margin-bottom: 13px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .field label { font-size: 11px; font-weight: 620; }
+    .optional-label { margin-left: 4px; color: var(--muted-foreground); font-weight: 400; }
+    .required-mark { margin-left: 3px; color: var(--danger); }
+    .input, .select, .textarea-small { width: 100%; min-height: 35px; border: 1px solid var(--input); border-radius: 8px; padding: 7px 10px; background: var(--background); color: var(--foreground); box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.02); }
+    .input::placeholder, .textarea-small::placeholder { color: var(--muted-foreground); opacity: 0.72; }
+    .input[readonly], .select:disabled, .checkbox-row.locked { background: var(--muted); color: var(--muted-foreground); }
+    .input.invalid, .select.invalid, .checkbox-row.invalid { border-color: color-mix(in srgb, var(--danger) 62%, var(--input)); }
+    .textarea-small { min-height: 74px; resize: vertical; }
+    .checkbox-row { min-height: 38px; display: flex; align-items: center; gap: 9px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); }
+    .checkbox-row input { width: 15px; height: 15px; accent-color: var(--foreground); }
+    .checkbox-row label { flex: 1; cursor: pointer; }
+    .field-description { color: var(--muted-foreground); font-size: 10px; line-height: 1.4; }
+    .field-error { color: var(--danger); font-size: 10px; line-height: 1.4; }
+    .variable-basic-grid { margin-bottom: 13px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "label-name label-type"
+        "control-name control-type"
+        "status status"; column-gap: 12px; row-gap: 6px; align-items: start; }
+    .variable-basic-grid > label { font-size: 11px; font-weight: 620; }
+    .variable-label-label { grid-area: label-name; }
+    .variable-type-label { grid-area: label-type; }
+    .variable-label-control { grid-area: control-name; }
+    .variable-type-control { grid-area: control-type; }
+    .variable-type-status { grid-area: status; }
+    .variable-basic-grid > .input, .variable-basic-grid > .select { height: 35px; min-height: 35px; }
+    .variable-docs-setting { margin-top: 18px; }
+    .side-section { padding: 13px; border-bottom: 1px solid var(--border); }
+    .side-section:last-child { border-bottom: 0; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .section-heading h3 { margin: 0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted-foreground); }
+    .badge { display: inline-flex; align-items: center; min-height: 19px; padding: 1px 6px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted-foreground); background: var(--card); font-size: 9px; font-weight: 620; }
+    .badge.blue { color: var(--blue); background: var(--blue-soft); border-color: color-mix(in srgb, var(--blue) 24%, var(--border)); }
+    .badge.danger-badge { color: var(--danger); background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 24%, var(--border)); }
+    .input-list { display: grid; gap: 7px; }
+    .input-item { width: 100%; display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 7px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); color: inherit; text-align: left; }
+    button.input-item { cursor: pointer; }
+    button.input-item:hover { border-color: var(--ring); background: var(--accent); }
+    .input-item.invalid { border-color: color-mix(in srgb, var(--danger) 58%, var(--border)); background: var(--danger-soft); }
+    .input-item-icon { color: var(--muted-foreground); display: grid; place-items: center; }
+    .input-item-icon svg { width: 14px; height: 14px; }
+    .input-item-main { min-width: 0; flex: 1; }
+    .input-item-name { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-mono); font-size: 10px; line-height: 1.35; }
+    .input-item-type { display: block; margin-top: 2px; color: var(--muted-foreground); font-size: 9px; line-height: 1.3; }
+    .diagnostic-list { display: grid; gap: 7px; }
+    .diagnostic { padding: 8px 9px; border: 1px solid var(--border); border-radius: 8px; font-size: 10px; line-height: 1.4; }
+    .diagnostic.warning { background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 24%, var(--border)); color: var(--warning); }
+    .diagnostic.error { background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 24%, var(--border)); color: var(--danger); }
+    .diagnostic strong { display: block; margin-bottom: 2px; }
+    .syntax-disclosure { border-top: 1px solid var(--border); }
+    .syntax-disclosure > summary { min-height: 42px; padding: 0 13px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: var(--muted-foreground); font-size: 10px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.07em; list-style: none; }
+    .syntax-disclosure > summary::-webkit-details-marker { display: none; }
+    .syntax-disclosure > summary::after { content: "+"; font-size: 14px; font-weight: 400; }
+    .syntax-disclosure[open] > summary::after { content: "−"; }
+    .syntax-list { display: grid; gap: 7px; padding: 0 13px 14px; }
+    .syntax-row { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 8px; }
+    .syntax-row code { padding: 2px 5px; border: 1px solid var(--border); border-radius: 5px; background: var(--muted); font-family: var(--font-mono); font-size: 9px; white-space: nowrap; }
+    .syntax-row span { color: var(--muted-foreground); font-size: 9px; }
+    .syntax-row.stacked { grid-template-columns: 1fr; gap: 4px; }
+    .syntax-row.stacked code { white-space: normal; overflow-wrap: anywhere; }
+    .syntax-group-label { margin-top: 5px; color: var(--muted-foreground); font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+    .syntax-group-label:first-child { margin-top: 0; }
+    .form-pane-body { padding: 16px; }
+    .template-guide { margin: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: color-mix(in srgb, var(--muted) 38%, var(--card)); color: var(--card-foreground); font-size: 11px; line-height: 1.55; overflow-wrap: anywhere; }
+    .form-pane-body .template-guide { margin: 18px 0 0; }
+    .template-guide-label { margin-bottom: 9px; color: var(--muted-foreground); font-size: 9px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+    .template-guide h1, .template-guide h2, .template-guide h3, .template-guide h4 { margin: 12px 0 6px; line-height: 1.25; }
+    .template-guide h1:first-child, .template-guide h2:first-child, .template-guide h3:first-child, .template-guide h4:first-child { margin-top: 0; }
+    .template-guide h1 { font-size: 16px; }
+    .template-guide h2 { font-size: 14px; }
+    .template-guide h3, .template-guide h4 { font-size: 12px; }
+    .template-guide p { margin: 7px 0; }
+    .template-guide ul, .template-guide ol { margin: 7px 0; padding-left: 20px; }
+    .template-guide li { margin: 3px 0; }
+    .template-guide code { padding: 1px 4px; border-radius: 4px; background: var(--muted); font-family: var(--font-mono); font-size: 10px; }
+    .template-guide pre { overflow: auto; padding: 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--card); }
+    .template-guide pre code { padding: 0; background: transparent; }
+    .template-guide blockquote { margin: 8px 0; padding-left: 10px; border-left: 3px solid var(--border); color: var(--muted-foreground); }
+    .template-guide a { color: var(--blue); }
+    .template-guide-empty { color: var(--muted-foreground); font-style: italic; }
+    .variable-doc + .variable-doc { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .variable-doc-title { margin: 0 0 7px; font-size: 12px; }
+    .form-share-action { margin-top: 18px; padding: 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
+    .form-share-action p { margin: 7px 0 0; color: var(--muted-foreground); font-size: 10px; line-height: 1.45; }
+    .form-section { margin-bottom: 18px; }
+    .form-section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; font-size: 11px; font-weight: 670; }
+    .collection-card { border: 1px solid var(--border); border-radius: 10px; background: var(--card); margin-bottom: 9px; overflow: hidden; }
+    .collection-card-header { min-height: 39px; padding: 6px 8px 6px 11px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--muted) 55%, var(--card)); }
+    .collection-card-title { min-width: 0; flex: 1; font-size: 11px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .collection-card-body { padding: 11px; }
+    .output-issues { padding: 8px; border-bottom: 1px solid var(--border); background: var(--danger-soft); }
+    .output-issues .diagnostic { margin-bottom: 5px; background: var(--card); }
+    .output-issues .diagnostic:last-child { margin-bottom: 0; }
+    .code-preview { margin: 0; min-height: 100%; padding: 14px 0 80px; overflow: auto; background: var(--card); color: var(--card-foreground); font-family: var(--font-mono); font-size: 11px; line-height: 1.65; tab-size: 2; }
+    .code-line { display: grid; grid-template-columns: 48px minmax(max-content, 1fr); min-height: 18px; padding-right: 18px; }
+    .code-line:hover { background: color-mix(in srgb, var(--muted) 48%, transparent); }
+    .line-number { padding-right: 13px; text-align: right; color: var(--muted-foreground); opacity: 0.55; user-select: none; }
+    .line-content { white-space: pre; }
+    .unresolved { color: var(--danger); background: var(--danger-soft); border-radius: 3px; }
+    .syntax-key { color: var(--syntax-key); }
+    .syntax-string { color: var(--syntax-string); }
+    .syntax-number { color: var(--syntax-number); }
+    .syntax-boolean { color: var(--syntax-boolean); font-weight: 600; }
+    .syntax-keyword { color: var(--syntax-keyword); font-weight: 650; }
+    .syntax-variable { color: var(--syntax-variable); }
+    .syntax-comment { color: var(--muted-foreground); font-style: italic; }
+    dialog { width: min(440px, calc(100vw - 28px)); border: 1px solid var(--border); border-radius: 12px; padding: 0; background: var(--popover); color: var(--foreground); box-shadow: 0 24px 80px rgb(0 0 0 / 0.24); }
+    dialog.wide-dialog { width: min(560px, calc(100vw - 28px)); }
+    dialog::backdrop { background: rgb(0 0 0 / 0.48); backdrop-filter: blur(2px); }
+    .dialog-header { padding: 17px 18px 13px; border-bottom: 1px solid var(--border); }
+    .dialog-header h2 { margin: 0; font-size: 14px; letter-spacing: -0.01em; }
+    .dialog-header p { margin: 4px 0 0; color: var(--muted-foreground); font-size: 11px; }
+    .dialog-body { padding: 16px 18px; }
+    .dialog-body.scrollable { max-height: min(68vh, 640px); overflow: auto; }
+    .dialog-footer { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .dialog-spacer { flex: 1; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .advanced-disclosure { margin-top: 4px; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+    .advanced-disclosure > summary { min-height: 40px; padding: 0 11px; display: flex; align-items: center; justify-content: space-between; list-style: none; color: var(--muted-foreground); font-size: 11px; font-weight: 620; cursor: pointer; }
+    .advanced-disclosure > summary::-webkit-details-marker { display: none; }
+    .advanced-disclosure > summary::after { content: "+"; font-size: 15px; font-weight: 400; }
+    .advanced-disclosure[open] > summary::after { content: "−"; }
+    .advanced-body { padding: 13px; border-top: 1px solid var(--border); background: color-mix(in srgb, var(--muted) 35%, var(--card)); }
+    .dialog-note { color: var(--muted-foreground); font-size: 10px; line-height: 1.45; }
+    .share-value { min-height: 112px; font-family: var(--font-mono); font-size: 10px; resize: vertical; }
+    .toast-region { position: fixed; right: 15px; bottom: 15px; z-index: 80; width: min(360px, calc(100vw - 30px)); display: grid; gap: 8px; pointer-events: none; }
+    .toast { display: flex; align-items: flex-start; gap: 9px; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--popover); box-shadow: var(--shadow); animation: toast-in 180ms ease both; pointer-events: auto; font-size: 11px; }
+    .toast svg { width: 15px; height: 15px; flex: none; margin-top: 1px; }
+    .toast.success svg { color: var(--success); }
+    .toast.error svg { color: var(--danger); }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(6px); }
+    }
+    .mobile-only { display: none; }
+    @media (max-width: 1120px) {
+      .brand { min-width: 0; }
+      .config-title, .button-label { display: none; }
+      .header-actions { min-width: 0; }
+      .workspace.configure { grid-template-columns: 240px minmax(350px, 1fr) 270px; }
+      .workspace.fill, .workspace.viewer { grid-template-columns: 290px 240px minmax(360px, 1fr); }
+    }
+    @media (max-width: 920px) {
+      body { overflow: auto; }
+      .topbar { position: sticky; top: 0; padding: 0 10px; }
+      .header-center { justify-content: flex-start; }
+      .header-actions { margin-left: auto; }
+      .workspace { height: auto; min-height: calc(100vh - var(--header-height)); display: block; overflow: visible; }
+      .pane { min-height: 420px; border-bottom: 1px solid var(--border); }
+      .pane + .pane { border-left: 0; }
+      .workspace .pane:last-child { min-height: 520px; }
+      .welcome { height: auto; min-height: calc(100vh - var(--header-height)); }
+      .desktop-only { display: none !important; }
+      .mobile-only { display: inline-flex; }
+    }
+    @media (max-width: 620px) {
+      .brand-title { display: none; }
+      .new-action { display: none; }
+      .welcome { padding: 28px 12px; }
+      .start-card { padding: 12px; }
+      .drop-zone { min-height: 180px; padding: 22px 14px; }
+      .field-grid { grid-template-columns: 1fr; gap: 0; }
+      .variable-basic-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "label-name"
+          "control-name"
+          "label-type"
+          "control-type"
+          "status"; }
+      .variable-type-label { margin-top: 7px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <main class="welcome" aria-label="Boilerplater">
+      <div class="welcome-shell"><div class="welcome-heading"><h1>Loading Boilerplater…</h1><p>This version needs an internet connection to load Vue.</p></div></div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.40/dist/vue.global.prod.js"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      if (!globalThis.Vue) {
+        document.querySelector("#app p").textContent = "Vue could not be loaded. Check your internet connection and reopen this file.";
+        return;
+      }
+
+      const { createApp, reactive, computed, nextTick } = Vue;
+
+      const STORAGE_KEY = "boilerplater-draft-v1";
+      const THEME_KEY = "boilerplater-theme";
+
+      // Assets and reactive application state
+      const icons = {
+        sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>',
+        moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>',
+        folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H10l2 2h6.5A2.5 2.5 0 0 1 21 9.5v7A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/></svg>',
+        folderOpen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17.5V7.2A2.2 2.2 0 0 1 5.2 5H10l2 2h6.8A2.2 2.2 0 0 1 21 9.2V10"/><path d="m3.5 18 2.2-6h15.8l-2.1 5.6A2.2 2.2 0 0 1 17.3 19H5a1.5 1.5 0 0 1-1.5-1Z"/></svg>',
+        file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h4M9 13h6M9 17h6"/></svg>',
+        compute: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3 4 7l4 4M16 13l4 4-4 4M14 4l-4 16"/></svg>',
+        chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>',
+        plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+        trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7m4 4v6m4-6v6"/></svg>',
+        copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>',
+        download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>',
+        upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m0 0L8 8m4-4 4 4M5 20h14"/></svg>',
+        check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg>',
+        alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2.8 20h18.4z"/><path d="M12 9v5m0 3v.01"/></svg>',
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-9v.01"/></svg>',
+        more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>',
+        arrowUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 15 6-6 6 6"/></svg>',
+        arrowDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>',
+        braces: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2M16 3h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2"/></svg>',
+        link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.1-1.1"/></svg>',
+        rename: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 16-1 5 5-1L19 9l-4-4zM13.5 6.5l4 4"/></svg>'
+      };
+
+      const ICONIFY_FILE_BASE = "https://api.iconify.design/material-icon-theme";
+      const MATERIAL_ICON_LIGHT_VARIANTS = Object.freeze({
+        bun: "bun-light",
+        hcl: "hcl-light",
+        pnpm: "pnpm-light",
+        toml: "toml-light"
+      });
+      const fileIconCache = new Map();
+      const FILE_ICON_BY_EXTENSION = Object.freeze({
+        yaml: "yaml", yml: "yaml",
+        json: "json", jsonc: "json", json5: "json",
+        md: "markdown", mdx: "markdown",
+        js: "javascript", mjs: "javascript", cjs: "javascript", jsx: "react",
+        ts: "typescript", mts: "typescript", cts: "typescript", tsx: "react-ts",
+        py: "python", pyi: "python",
+        html: "html", htm: "html",
+        css: "css", scss: "sass", sass: "sass", less: "less",
+        sh: "console", bash: "console", zsh: "console", fish: "console",
+        ps1: "powershell", psm1: "powershell", psd1: "powershell",
+        tf: "terraform", tfvars: "terraform", hcl: "hcl",
+        xml: "xml", sql: "database", toml: "toml",
+        ini: "settings", conf: "settings", cfg: "settings", properties: "settings",
+        env: "settings", txt: "document", log: "log",
+        go: "go", java: "java", kt: "kotlin", kts: "kotlin",
+        php: "php", rb: "ruby", rs: "rust",
+        c: "c", h: "c", cc: "cpp", cpp: "cpp", cxx: "cpp", hpp: "cpp",
+        cs: "csharp", vue: "vue", svelte: "svelte",
+        graphql: "graphql", gql: "graphql", proto: "proto",
+        lua: "lua", swift: "swift", dart: "dart", groovy: "groovy",
+        csv: "table", tsv: "table", xls: "table", xlsx: "table",
+        sqlite: "database", db: "database", pdf: "pdf",
+        png: "image", jpg: "image", jpeg: "image", gif: "image", webp: "image", avif: "image", ico: "image", bmp: "image",
+        mp3: "audio", wav: "audio", flac: "audio", ogg: "audio", m4a: "audio",
+        mp4: "video", webm: "video", mov: "video", avi: "video", mkv: "video",
+        zip: "zip", gz: "zip", tgz: "zip", tar: "zip", rar: "zip", "7z": "zip"
+      });
+
+      function materialFileIconName(name) {
+        const base = String(name || "").split(/[\\/]/).pop().trim().toLowerCase();
+        if (!base) return null;
+        if (base === "dockerfile" || base.startsWith("dockerfile.") || base.endsWith(".dockerfile") || base === ".dockerignore" || /^(docker-)?compose\.ya?ml$/.test(base)) return "docker";
+        if ([".gitignore", ".gitattributes", ".gitmodules", ".gitkeep"].includes(base)) return "git";
+        if (base === ".env" || base.startsWith(".env.")) return "settings";
+        if (["package.json", "package-lock.json", "npm-shrinkwrap.json", ".npmrc"].includes(base)) return "npm";
+        if (["pnpm-lock.yaml", "pnpm-workspace.yaml", ".pnpmfile.cjs"].includes(base)) return "pnpm";
+        if (["yarn.lock", ".yarnrc", ".yarnrc.yml"].includes(base)) return "yarn";
+        if (["bun.lock", "bun.lockb", "bunfig.toml"].includes(base)) return "bun";
+        if (/^tsconfig(?:\..+)?\.json$/.test(base)) return "tsconfig";
+        if (/^jsconfig(?:\..+)?\.json$/.test(base)) return "jsconfig";
+        if (/^(vite|vitest)\.config\./.test(base)) return base.startsWith("vitest") ? "vitest" : "vite";
+        if (/^webpack\.config\./.test(base)) return "webpack";
+        if (base.startsWith(".eslintrc") || base.startsWith("eslint.config.")) return "eslint";
+        if (base.startsWith(".prettierrc") || base.startsWith("prettier.config.")) return "prettier";
+        if (/^changelog(\.|$)/.test(base)) return "changelog";
+        if (/^(readme|contributing)(\.|$)/.test(base)) return "markdown";
+        if (/^(license|licence)(\.|$)/.test(base)) return "license";
+        if (base === "jenkinsfile" || base.startsWith("jenkinsfile.")) return "jenkins";
+        if (base === "chart.yaml") return "helm";
+        if (base === "caddyfile") return "caddy";
+        if (base === "nginx.conf") return "nginx";
+        if (["requirements.txt", "pipfile", "pipfile.lock"].includes(base)) return "python";
+        if (["pyproject.toml", "poetry.lock"].includes(base)) return "poetry";
+        if (["go.mod", "go.sum", "go.work"].includes(base)) return "go-mod";
+        if (["cargo.toml", "cargo.lock"].includes(base)) return "rust";
+        if (base === "cmakelists.txt" || base.endsWith(".cmake")) return "cmake";
+        if (/^(build|settings)\.gradle(?:\.kts)?$/.test(base) || base === "gradlew" || base === "gradlew.bat") return "gradle";
+        if (base === "terraform.lock.hcl" || base === ".terraform.lock.hcl") return "terraform";
+        const extension = base.includes(".") ? base.split(".").pop() : "";
+        return FILE_ICON_BY_EXTENSION[extension] || "document";
+      }
+
+      function renderFileIcon(name) {
+        const baseIconName = materialFileIconName(name);
+        const iconName = ui.theme === "light" ? MATERIAL_ICON_LIGHT_VARIANTS[baseIconName] || baseIconName : baseIconName;
+        if (!iconName) return icons.file;
+        requestFileIcon(iconName);
+        const cached = fileIconCache.get(iconName);
+        if (cached?.status === "failed") return icons.file;
+        const loaded = cached?.status === "ready" && cached.url;
+        const classes = ["file-icon-stack"];
+        if (loaded) classes.push("loaded");
+        return `<span class="${classes.join(" ")}" data-file-icon="${escapeHTML(iconName)}"><span class="file-icon-fallback">${icons.file}</span>${loaded ? `<img class="file-type-icon" src="${escapeHTML(cached.url)}" alt="" aria-hidden="true" decoding="async">` : ""}</span>`;
+      }
+
+      function fileIconSelector(iconName) {
+        return `.file-icon-stack[data-file-icon="${CSS.escape(iconName)}"]`;
+      }
+
+      function failFileIcon(iconName) {
+        const cached = fileIconCache.get(iconName);
+        if (!cached || cached.status === "failed") return;
+        if (cached.url) URL.revokeObjectURL(cached.url);
+        cached.status = "failed";
+        cached.url = "";
+        document.querySelectorAll(fileIconSelector(iconName)).forEach(stack => {
+          stack.classList.remove("loaded");
+          stack.querySelector(".file-type-icon")?.remove();
+        });
+      }
+
+      function hydrateFileIcons(iconName) {
+        const cached = fileIconCache.get(iconName);
+        if (!cached || cached.status !== "ready" || !cached.url) return;
+        document.querySelectorAll(fileIconSelector(iconName)).forEach(stack => {
+          if (stack.querySelector(".file-type-icon")) {
+            stack.classList.add("loaded");
+            return;
+          }
+          const image = document.createElement("img");
+          image.className = "file-type-icon";
+          image.alt = "";
+          image.setAttribute("aria-hidden", "true");
+          image.decoding = "async";
+          image.addEventListener("load", () => stack.classList.add("loaded"), { once: true });
+          image.addEventListener("error", () => failFileIcon(iconName), { once: true });
+          image.src = cached.url;
+          stack.appendChild(image);
+          if (image.complete && image.naturalWidth) stack.classList.add("loaded");
+        });
+      }
+
+      function requestFileIcon(iconName) {
+        if (fileIconCache.has(iconName)) return;
+        const cached = { status: "loading", url: "" };
+        fileIconCache.set(iconName, cached);
+        const source = `${ICONIFY_FILE_BASE}/${iconName}.svg`;
+        fetch(source, {
+          cache: "force-cache",
+          credentials: "omit",
+          referrerPolicy: "no-referrer"
+        })
+          .then(response => {
+            if (!response.ok) throw new Error(`Icon request failed with ${response.status}`);
+            return response.text();
+          })
+          .then(svg => {
+            if (!/^\s*<svg[\s>]/i.test(svg) || /<(?:script|foreignObject|iframe|object|embed)\b/i.test(svg)) {
+              throw new Error("Invalid icon response");
+            }
+            cached.url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+            cached.status = "ready";
+            hydrateFileIcons(iconName);
+          })
+          .catch(() => failFileIcon(iconName));
+      }
+
+      const state = reactive({
+        config: null,
+        mode: "configure",
+        selectedNodeId: null,
+        selectedOutputPath: null,
+        values: { globals: {}, collections: {} },
+        dirty: false,
+        collapsed: new Set(),
+        outputCollapsed: new Set(),
+        pendingCreateParentId: null,
+        pendingDeleteId: null,
+        shareCode: "",
+        shareHashKey: "template",
+        saveTimer: null,
+        analysis: null,
+        rendered: null
+      });
+
+      const ui = reactive({
+        theme: "light",
+        resume: null,
+        dragging: false,
+        create: { kind: "folder", parentLabel: "Template root", computeType: "group", name: "", content: "", collection: "items", binding: "item", reference: "enabled", label: "group" },
+        confirm: { action: "", title: "", description: "", label: "Confirm", danger: false },
+        variable: { isNew: false, originalKey: "", name: "", label: "", type: "auto", default: "", docs: "", description: "", required: false, pattern: "", patternMessage: "", derive: "", advanced: false },
+        share: { action: "copy-link", title: "Share template", description: "", label: "Share link", value: "", note: "", readOnly: true, secondary: false },
+        toasts: []
+      });
+
+      function uid() {
+        if (globalThis.crypto && crypto.randomUUID) return crypto.randomUUID();
+        return "node-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 9);
+      }
+
+      function escapeHTML(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function renderMarkdownInline(value) {
+        return escapeHTML(value)
+          .replace(/`([^`]+)`/g, "<code>$1</code>")
+          .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+          .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+          .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
+          .replace(/\[([^\]]+)]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      }
+
+      function renderMarkdown(markdown) {
+        const lines = String(markdown || "").replace(/\r\n?/g, "\n").split("\n");
+        const output = [];
+        let paragraph = [];
+        let list = "";
+        let code = null;
+        const flushParagraph = () => {
+          if (!paragraph.length) return;
+          output.push(`<p>${renderMarkdownInline(paragraph.join(" "))}</p>`);
+          paragraph = [];
+        };
+        const closeList = () => {
+          if (!list) return;
+          output.push(`</${list}>`);
+          list = "";
+        };
+        for (const line of lines) {
+          if (code) {
+            if (/^```/.test(line)) {
+              output.push(`<pre><code>${escapeHTML(code.lines.join("\n"))}</code></pre>`);
+              code = null;
+            } else code.lines.push(line);
+            continue;
+          }
+          const fence = line.match(/^```\s*([\w-]*)/);
+          if (fence) {
+            flushParagraph();
+            closeList();
+            code = { language: fence[1], lines: [] };
+            continue;
+          }
+          const heading = line.match(/^(#{1,4})\s+(.+)$/);
+          if (heading) {
+            flushParagraph();
+            closeList();
+            output.push(`<h${heading[1].length}>${renderMarkdownInline(heading[2])}</h${heading[1].length}>`);
+            continue;
+          }
+          const bullet = line.match(/^\s*[-*]\s+(.+)$/);
+          const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/);
+          if (bullet || ordered) {
+            flushParagraph();
+            const type = bullet ? "ul" : "ol";
+            if (list !== type) {
+              closeList();
+              output.push(`<${type}>`);
+              list = type;
+            }
+            output.push(`<li>${renderMarkdownInline((bullet || ordered)[1])}</li>`);
+            continue;
+          }
+          const quote = line.match(/^>\s?(.*)$/);
+          if (quote) {
+            flushParagraph();
+            closeList();
+            output.push(`<blockquote>${renderMarkdownInline(quote[1])}</blockquote>`);
+            continue;
+          }
+          if (!line.trim()) {
+            flushParagraph();
+            closeList();
+          } else {
+            closeList();
+            paragraph.push(line.trim());
+          }
+        }
+        flushParagraph();
+        closeList();
+        if (code) output.push(`<pre><code>${escapeHTML(code.lines.join("\n"))}</code></pre>`);
+        return output.join("");
+      }
+
+      function slugifyFileName(value) {
+        return String(value || "template")
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "") || "template";
+      }
+
+      function humanize(value) {
+        const last = String(value || "value").split(".").pop();
+        let text = last
+          .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+          .replace(/[_-]+/g, " ")
+          .trim()
+          .toLowerCase();
+        text = text.charAt(0).toUpperCase() + text.slice(1);
+        if (/^(is|has|can|should|include|enable)\s/i.test(text) && !text.endsWith("?")) text += "?";
+        return text;
+      }
+
+      function singularize(value) {
+        const word = String(value || "item");
+        if (word.endsWith("ies")) return word.slice(0, -3) + "y";
+        if (word.endsWith("ses")) return word.slice(0, -2);
+        if (word.endsWith("s") && !word.endsWith("ss")) return word.slice(0, -1);
+        return word;
+      }
+
+      function deepClone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      // Configuration model and normalization
+      function walkNodes(nodes, visitor, parent = null, ancestry = []) {
+        for (const node of nodes || []) {
+          const result = visitor(node, parent, ancestry);
+          if (result === false) return false;
+          if (node.type === "folder" && walkNodes(node.children || [], visitor, node, [...ancestry, node]) === false) return false;
+        }
+      }
+
+      function findNode(id) {
+        let found = null;
+        if (!state.config || !id) return null;
+        walkNodes(state.config.tree, (node, parent, ancestry) => {
+          if (node.id === id) {
+            found = { node, parent, ancestry };
+            return false;
+          }
+        });
+        return found;
+      }
+
+      function findContainerForSelection(placement = "sibling") {
+        const found = findNode(state.selectedNodeId);
+        if (!found) return { children: state.config.tree, label: "Template root", parentId: null };
+        if (placement === "child" && found.node.type === "folder") return { children: found.node.children, label: nodePath(found.node.id), parentId: found.node.id };
+        if (found.parent) return { children: found.parent.children, label: nodePath(found.parent.id), parentId: found.parent.id };
+        return { children: state.config.tree, label: "Template root", parentId: null };
+      }
+
+      function nodePath(id) {
+        const found = findNode(id);
+        if (!found) return "Template root";
+        return [...found.ancestry.map(item => item.name), found.node.name].join(" / ");
+      }
+
+      function normalizeNode(node) {
+        const type = node && node.type === "file" ? "file" : "folder";
+        const normalized = {
+          id: typeof node?.id === "string" && node.id ? node.id : uid(),
+          type,
+          name: typeof node?.name === "string" ? node.name : type === "file" ? "untitled.txt" : "untitled"
+        };
+        if (type === "file") normalized.content = typeof node?.content === "string" ? node.content : "";
+        else normalized.children = Array.isArray(node?.children) ? node.children.map(normalizeNode) : [];
+        return normalized;
+      }
+
+      function normalizeVariables(input) {
+        if (input == null) return {};
+        if (typeof input !== "object" || Array.isArray(input)) throw new Error("Variables must be stored as an object.");
+        const variables = {};
+        for (const [key, raw] of Object.entries(input)) {
+          if (!/^[A-Za-z_][\w.-]*$/.test(key)) throw new Error(`Invalid variable name: ${key}`);
+          if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+          const definition = {};
+          if (raw.manual) definition.manual = true;
+          if (["auto", "boolean", "choice", "text"].includes(raw.type)) definition.type = raw.type;
+          if (typeof raw.label === "string" && raw.label.trim()) definition.label = raw.label.trim();
+          if (typeof raw.description === "string" && raw.description.trim()) definition.description = raw.description.trim();
+          if (typeof raw.docs === "string" && raw.docs.trim()) definition.docs = raw.docs;
+          if (raw.required) definition.required = true;
+          if (typeof raw.pattern === "string" && raw.pattern) definition.pattern = raw.pattern;
+          if (typeof raw.patternMessage === "string" && raw.patternMessage.trim()) definition.patternMessage = raw.patternMessage.trim();
+          if (typeof raw.derive === "string" && raw.derive.trim()) definition.derive = raw.derive.trim();
+          if (Object.prototype.hasOwnProperty.call(raw, "default") && ["string", "number", "boolean"].includes(typeof raw.default)) definition.default = raw.default;
+          variables[key] = definition;
+        }
+        return variables;
+      }
+
+      function validateAndNormalizeConfig(input) {
+        if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("The configuration must be a JSON object.");
+        const source = input.configuration && typeof input.configuration === "object" ? input.configuration : input;
+        if (!Array.isArray(source.tree)) throw new Error("This does not look like a Boilerplater configuration: missing tree array.");
+        if (source.formatVersion != null && Number(source.formatVersion) !== 1) throw new Error("This configuration uses an unsupported format version.");
+        const seen = new Set();
+        const tree = source.tree.map(normalizeNode);
+        walkNodes(tree, node => {
+          if (seen.has(node.id)) node.id = uid();
+          seen.add(node.id);
+          if (!node.name.trim()) throw new Error("Folder and file names cannot be empty.");
+        });
+        return {
+          formatVersion: 1,
+          name: typeof source.name === "string" && source.name.trim() ? source.name.trim() : "Untitled template",
+          instructions: typeof source.instructions === "string" ? source.instructions : "",
+          variables: normalizeVariables(source.variables),
+          tree
+        };
+      }
+
+      function blankConfig() {
+        return { formatVersion: 1, name: "Untitled template", instructions: "", variables: {}, tree: [] };
+      }
+
+      const TYPE_SAFETY_RANK = { boolean: 0, choice: 1, text: 2 };
+
+      function resolveTypeSetting(inferredType, requestedType = "auto", inferredOptions = []) {
+        const inferred = Object.prototype.hasOwnProperty.call(TYPE_SAFETY_RANK, inferredType) ? inferredType : "text";
+        const requested = ["auto", "boolean", "choice", "text"].includes(requestedType) ? requestedType : "auto";
+        const invalid = requested !== "auto" && TYPE_SAFETY_RANK[requested] < TYPE_SAFETY_RANK[inferred];
+        const type = requested === "auto" || invalid ? inferred : requested;
+        let options = null;
+        if (type === "choice") {
+          options = [...new Set((inferred === "boolean" ? ["false", "true"] : inferredOptions || []).map(String))];
+          if (invalid && requested === "boolean") options = [...new Set([...options, "false", "true"])];
+        }
+        return { inferred, requested, type, invalid, options };
+      }
+
+      function parsePredicate(expression) {
+        const match = String(expression || "").trim().match(/^([A-Za-z_][\w.-]*)(?:\s*=\s*(.+))?$/);
+        if (!match) return null;
+        const reference = match[1];
+        if (match[2] == null) return { reference, operator: "truthy", value: true, option: "true", usage: "boolean" };
+        const raw = match[2].trim();
+        if (!raw) return null;
+        let value = raw;
+        const quote = raw[0];
+        if (quote === '"' || quote === "'") {
+          if (raw.length < 2 || raw.at(-1) !== quote) return null;
+          try {
+            value = quote === '"' ? JSON.parse(raw) : raw.slice(1, -1).replace(/\\(['\\])/g, "$1");
+          } catch {
+            return null;
+          }
+        } else if (/\s/.test(raw)) {
+          return null;
+        }
+        value = String(value);
+        const isBoolean = /^(true|false)$/i.test(value);
+        const option = isBoolean ? value.toLowerCase() : value;
+        return { reference, operator: "equals", value: isBoolean ? option === "true" : value, option, usage: isBoolean ? "boolean" : "choice" };
+      }
+
+      function predicateMatches(predicate, bindings) {
+        const actual = getReference(predicate.reference, bindings);
+        if (predicate.operator === "equals") {
+          if (/^(true|false)$/.test(predicate.option)) return String(actual).toLowerCase() === predicate.option;
+          return String(actual) === predicate.option;
+        }
+        return actual === true || String(actual).toLowerCase() === "true";
+      }
+
+      function parseLoopClause(expression) {
+        const match = String(expression || "").trim().match(/^for\s+(.+?)\s+in\s+([A-Za-z_][\w.-]*)$/i);
+        if (!match) return null;
+        const target = match[1].trim();
+        const collection = match[2];
+        if (/^[A-Za-z_][\w-]*$/.test(target)) return { alias: target, bindings: [target], destructured: false, collection };
+        const tuple = target.match(/^\(([^)]+)\)$/);
+        if (!tuple) return null;
+        const bindings = tuple[1].split(",").map(value => value.trim()).filter(Boolean);
+        if (bindings.length < 2 || new Set(bindings).size !== bindings.length || bindings.some(value => !/^[A-Za-z_][\w-]*$/.test(value))) return null;
+        return { alias: null, bindings, destructured: true, collection };
+      }
+
+      function bindLoopItem(loop, item, bindings = {}) {
+        if (loop.destructured) return { ...bindings, ...Object.fromEntries(loop.bindings.map(name => [name, item?.[name]])) };
+        return { ...bindings, [loop.alias]: item };
+      }
+
+      function parseCompute(name) {
+        const value = String(name || "").trim();
+        let match = value.match(/^\(group\s+(.+)\)$/i);
+        if (match) return { type: "group", label: match[1].trim() };
+        match = value.match(/^\((for\s+.+)\)$/i);
+        if (match) {
+          const loop = parseLoopClause(match[1]);
+          if (loop) return { type: "for", ...loop };
+        }
+        match = value.match(/^\(when\s+(not\s+)?(.+)\)$/i);
+        if (match) {
+          const predicate = parsePredicate(match[2]);
+          if (predicate) return { type: "when", negate: Boolean(match[1]), ...predicate };
+        }
+        return null;
+      }
+
+      function normalizeStandaloneTemplateTags(template) {
+        return String(template || "").replace(/^[\t ]*({{\s*(?:#(?:if|unless|for)\b[^{}\r\n]*|else|\/(?:if|unless|for)|![^{}\r\n]*)\s*}})[\t ]*(?:\r?\n|$)/gm, "$1");
+      }
+
+      function parseContentTemplate(template) {
+        const input = normalizeStandaloneTemplateTags(template);
+        const root = [];
+        const errors = [];
+        const stack = [{ kind: "root", children: root, node: null, inElse: false }];
+        const tokens = /{{([\s\S]*?)}}/g;
+        let cursor = 0;
+        const append = node => stack.at(-1).children.push(node);
+        const appendText = value => { if (value) append({ type: "text", value }); };
+
+        for (const match of input.matchAll(tokens)) {
+          appendText(input.slice(cursor, match.index));
+          const raw = match[0];
+          const tag = match[1].trim();
+          cursor = match.index + raw.length;
+
+          if (tag.startsWith("!")) continue;
+          if (tag === "else") {
+            const frame = stack.at(-1);
+            if (frame.kind === "root" || frame.inElse) {
+              errors.push("Unexpected {{else}}.");
+              appendText(raw);
+            } else {
+              frame.inElse = true;
+              frame.children = frame.node.alternate;
+            }
+            continue;
+          }
+          if (tag.startsWith("/")) {
+            const closing = tag.slice(1).trim();
+            const frame = stack.at(-1);
+            if (frame.kind === closing) stack.pop();
+            else {
+              errors.push(`Unexpected closing tag {{/${closing}}}.`);
+              appendText(raw);
+            }
+            continue;
+          }
+          if (tag.startsWith("#")) {
+            const expression = tag.slice(1).trim();
+            let node = null;
+            const condition = expression.match(/^(if|unless)\s+(.+)$/);
+            const loop = parseLoopClause(expression);
+            if (condition) {
+              const predicate = parsePredicate(condition[2]);
+              if (predicate) node = { type: "block", kind: condition[1], predicate, children: [], alternate: [] };
+              else errors.push(`Invalid condition: ${condition[2].trim()}.`);
+            } else if (loop) {
+              node = { type: "block", kind: "for", ...loop, children: [], alternate: [] };
+            } else {
+              errors.push(`Unknown block: {{${tag}}}.`);
+            }
+            if (!node) {
+              appendText(raw);
+              continue;
+            }
+            append(node);
+            stack.push({ kind: node.kind, children: node.children, node, inElse: false });
+            continue;
+          }
+          if (/^[A-Za-z_][\w.-]*$/.test(tag)) append({ type: "variable", reference: tag });
+          else appendText(raw);
+        }
+
+        appendText(input.slice(cursor));
+        for (const frame of stack.slice(1)) errors.push(`Missing {{/${frame.kind}}}.`);
+        return { nodes: root, errors };
+      }
+
+      // Template analysis and type inference
+      function analyzeConfiguration() {
+        const globals = new Map();
+        const collections = new Map();
+        const diagnostics = [];
+        const references = [];
+        const loopBindings = new Map();
+
+        const addUsage = (field, usage, option) => {
+          field.textUsed ||= usage === "text";
+          field.booleanUsed ||= usage === "boolean";
+          if (usage === "boolean" && option != null && !field.booleanOptions.includes(String(option))) field.booleanOptions.push(String(option));
+          if (usage === "choice" && option != null && !field.choiceOptions.includes(String(option))) field.choiceOptions.push(String(option));
+          field.type = field.choiceOptions.length ? "choice" : field.booleanUsed ? "boolean" : "text";
+          field.options = field.type === "choice" ? [...new Set([...field.booleanOptions, ...field.choiceOptions])] : null;
+        };
+
+        const ensureGlobal = (reference, usage = "text", option = null, source = "template") => {
+          if (!reference) return;
+          let field = globals.get(reference);
+          if (!field) {
+            field = { key: reference, label: humanize(reference), type: "text", options: null, textUsed: false, booleanUsed: false, booleanOptions: [], choiceOptions: [], source };
+            globals.set(reference, field);
+          }
+          addUsage(field, usage, option);
+          references.push(reference);
+        };
+
+        const ensureCollection = (collection, alias) => {
+          const existing = collections.get(collection);
+          if (existing && alias && existing.alias && existing.alias !== alias) {
+            diagnostics.push({ level: "warning", title: "Collection uses multiple aliases", message: `${collection} is referenced as both ${existing.alias} and ${alias}.` });
+          }
+          if (!existing) collections.set(collection, { key: collection, alias: alias || singularize(collection), objectAliases: new Set(alias ? [alias] : []), label: humanize(collection), fields: new Map(), directFields: new Set() });
+          const result = collections.get(collection);
+          if (alias) result.objectAliases.add(alias);
+          return result;
+        };
+
+        const loopScope = (scope, loop) => {
+          const next = { aliases: new Map(scope.aliases) };
+          if (loop.destructured) {
+            for (const name of loop.bindings) {
+              next.aliases.set(name, { collection: loop.collection, field: name, alias: null });
+              if (!loopBindings.has(name)) loopBindings.set(name, new Set());
+              loopBindings.get(name).add(loop.collection);
+            }
+          } else {
+            next.aliases.set(loop.alias, { collection: loop.collection, field: null, alias: loop.alias, bareUsed: false, dottedUsed: false });
+            if (!loopBindings.has(loop.alias)) loopBindings.set(loop.alias, new Set());
+            loopBindings.get(loop.alias).add(loop.collection);
+          }
+          return next;
+        };
+
+        const register = (reference, usage, scope, option = null, source = "template") => {
+          if (!reference) return;
+          const first = reference.split(".")[0];
+          const scoped = scope.aliases.get(first);
+          if (scoped) {
+            const collection = ensureCollection(scoped.collection, scoped.alias);
+            const suffix = reference.includes(".") ? reference.slice(first.length + 1) : "";
+            let field;
+            let definitionReference;
+            if (scoped.field) {
+              field = suffix ? `${scoped.field}.${suffix}` : scoped.field;
+              collection.directFields.add(scoped.field);
+              definitionReference = `${scoped.collection}.${field}`;
+            } else if (suffix) {
+              scoped.dottedUsed = true;
+              field = suffix;
+              definitionReference = reference;
+            } else {
+              scoped.bareUsed = true;
+              field = scoped.alias || first;
+              collection.directFields.add(field);
+              definitionReference = `${scoped.collection}.${field}`;
+            }
+            let current = collection.fields.get(field);
+            if (!current) {
+              current = { key: field, reference: definitionReference, templateReference: reference, label: humanize(field), type: "text", options: null, textUsed: false, booleanUsed: false, booleanOptions: [], choiceOptions: [], source };
+              collection.fields.set(field, current);
+            }
+            addUsage(current, usage, option);
+          } else {
+            ensureGlobal(reference, usage, option, source);
+          }
+        };
+
+        const scanText = (text, scope, source) => {
+          const parsed = parseContentTemplate(text);
+          for (const message of parsed.errors) diagnostics.push({ level: "warning", title: "Invalid file template", message: `${message} In ${source}.` });
+          const scanNodes = (nodes, activeScope) => {
+            for (const node of nodes) {
+              if (node.type === "variable") {
+                register(node.reference, "text", activeScope, null, source);
+                continue;
+              }
+              if (node.type !== "block") continue;
+              if (node.kind === "for") {
+                if (node.collection.includes(".")) diagnostics.push({ level: "warning", title: "Nested collection", message: "Nested collections are not editable in the generated form yet." });
+                ensureCollection(node.collection, node.alias);
+                const scopedLoop = loopScope(activeScope, node);
+                if (node.destructured) for (const name of node.bindings) register(name, "text", scopedLoop, null, source);
+                scanNodes(node.children, scopedLoop);
+                if (!node.destructured) {
+                  const binding = scopedLoop.aliases.get(node.alias);
+                  if (!binding.bareUsed && !binding.dottedUsed) register(node.alias, "text", scopedLoop, null, source);
+                }
+                scanNodes(node.alternate, activeScope);
+              } else {
+                register(node.predicate.reference, node.predicate.usage, activeScope, node.predicate.option, source);
+                scanNodes(node.children, activeScope);
+                scanNodes(node.alternate, activeScope);
+              }
+            }
+          };
+          scanNodes(parsed.nodes, scope);
+        };
+
+        const scanName = (name, scope, source) => {
+          const token = /\[\[\s*([A-Za-z_][\w.-]*)\s*]]/g;
+          for (const match of name.matchAll(token)) register(match[1], "text", scope, null, source);
+        };
+
+        const visit = (nodes, scope, sourcePath = []) => {
+          for (const node of nodes) {
+            const path = [...sourcePath, node.name];
+            if (!node.name.trim()) {
+              diagnostics.push({ level: "error", title: "Name required", message: `A ${node.type} has an empty name.` });
+            }
+            if (node.type === "folder") {
+              const compute = parseCompute(node.name);
+              if (!compute && /^\(.*\)$/.test(node.name.trim())) {
+                diagnostics.push({ level: "warning", title: "Unknown logic syntax", message: `${node.name} will be generated as a normal folder.` });
+              }
+              if (compute?.type === "for") {
+                if (compute.collection.includes(".")) {
+                  diagnostics.push({ level: "warning", title: "Nested collection", message: "Nested collections are not editable in the generated form yet." });
+                }
+                ensureCollection(compute.collection, compute.alias);
+                const scopedLoop = loopScope(scope, compute);
+                if (compute.destructured) for (const name of compute.bindings) register(name, "text", scopedLoop, null, path.join(" / "));
+                visit(node.children, scopedLoop, path);
+                if (!compute.destructured) {
+                  const binding = scopedLoop.aliases.get(compute.alias);
+                  if (!binding.bareUsed && !binding.dottedUsed) register(compute.alias, "text", scopedLoop, null, path.join(" / "));
+                }
+              } else if (compute?.type === "when") {
+                register(compute.reference, compute.usage, scope, compute.option, path.join(" / "));
+                visit(node.children, scope, path);
+              } else {
+                if (!compute) scanName(node.name, scope, path.join(" / "));
+                visit(node.children, scope, path);
+              }
+            } else {
+              scanName(node.name, scope, path.join(" / "));
+              scanText(node.content, scope, path.join(" / "));
+            }
+          }
+        };
+
+        if (state.config) visit(state.config.tree, { aliases: new Map() });
+
+        for (const field of globals.values()) {
+          const root = field.key.split(".")[0];
+          const matchingCollections = [...(loopBindings.get(root) || [])];
+          if (!matchingCollections.length) continue;
+          diagnostics.push({
+            level: "warning",
+            title: "Loop binding used outside its loop",
+            message: `${field.key} is outside the ${matchingCollections.join(" / ")} loop scope, so it becomes a shared value. Move this item inside the loop to make it a per-item field.`
+          });
+        }
+
+        const definitions = state.config?.variables || {};
+        const findCollectionField = reference => {
+          for (const collection of collections.values()) {
+            for (const field of collection.fields.values()) if (field.reference === reference) return field;
+          }
+          return null;
+        };
+
+        for (const [reference, definition] of Object.entries(definitions)) {
+          if (!definition.manual || globals.has(reference) || findCollectionField(reference)) continue;
+          if (collections.has(reference)) {
+            diagnostics.push({ level: "error", title: "Reserved variable name", message: `${reference} is already used as a collection name.` });
+            continue;
+          }
+          ensureGlobal(reference, "text", null, "Manual variable");
+        }
+
+        const applyDefinition = (field, reference) => {
+          const definition = definitions[reference] || {};
+          const inferredType = field.type || "text";
+          const inferredOptions = field.options ? [...field.options] : [];
+          const typeSetting = resolveTypeSetting(inferredType, definition.type || "auto", inferredOptions);
+          const { type, options } = typeSetting;
+          if (definition.pattern) {
+            try { new RegExp(definition.pattern); }
+            catch { diagnostics.push({ level: "error", title: "Invalid validation pattern", message: `${reference} has an invalid regular expression.` }); }
+          }
+          if (typeSetting.invalid) {
+            diagnostics.push({
+              level: "warning",
+              title: "Unsafe type setting ignored",
+              message: `${reference} is inferred as ${fieldTypeLabel(inferredType).toLowerCase()}, so ${fieldTypeLabel(typeSetting.requested).toLowerCase()} would lose information. The form uses ${fieldTypeLabel(type).toLowerCase()}.`
+            });
+          }
+          Object.assign(field, {
+            reference: field.reference || reference,
+            inferredType,
+            inferredOptions,
+            requestedType: typeSetting.requested,
+            typeSettingError: typeSetting.invalid,
+            type,
+            options,
+            label: definition.label || field.label || humanize(reference),
+            description: definition.description || "",
+            docs: definition.docs || "",
+            required: Boolean(definition.required),
+            pattern: definition.pattern || "",
+            patternMessage: definition.patternMessage || "",
+            derive: definition.derive || "",
+            manual: Boolean(definition.manual),
+            customized: Object.keys(definition).some(key => key !== "manual")
+          });
+          if (Object.prototype.hasOwnProperty.call(definition, "default")) {
+            field.default = definition.default;
+            field.hasDefault = true;
+          } else {
+            field.hasDefault = false;
+          }
+        };
+
+        for (const field of globals.values()) applyDefinition(field, field.key);
+        for (const collection of collections.values()) {
+          for (const field of collection.fields.values()) applyDefinition(field, field.reference);
+        }
+
+        const visiting = new Set();
+        const visited = new Set();
+        let cycleReported = false;
+        const checkDerived = reference => {
+          if (visited.has(reference) || cycleReported) return;
+          if (visiting.has(reference)) {
+            diagnostics.push({ level: "error", title: "Derived value cycle", message: `Derived variables cannot depend on themselves: ${reference}.` });
+            cycleReported = true;
+            return;
+          }
+          const template = definitions[reference]?.derive;
+          if (!template) return visited.add(reference);
+          visiting.add(reference);
+          for (const match of template.matchAll(/{{\s*([A-Za-z_][\w.-]*)\s*}}/g)) {
+            if (definitions[match[1]]?.derive) checkDerived(match[1]);
+          }
+          visiting.delete(reference);
+          visited.add(reference);
+        };
+        for (const reference of Object.keys(definitions)) checkDerived(reference);
+
+        return { globals, collections, diagnostics, references };
+      }
+
+      function newCollectionItem(collection) {
+        const item = { __id: uid() };
+        for (const field of collection.fields.values()) item[field.key] = initialFieldValue(field);
+        return item;
+      }
+
+      function coerceFieldValue(field, value) {
+        if (field.type === "boolean") {
+          if (typeof value === "boolean") return value;
+          return /^(true|1|yes|on)$/i.test(String(value || ""));
+        }
+        if (field.type === "number") return value == null ? "" : String(value);
+        return value == null ? "" : String(value);
+      }
+
+      function initialFieldValue(field) {
+        if (field.hasDefault) return coerceFieldValue(field, field.default);
+        if (field.type === "boolean") return false;
+        if (field.type === "choice") return field.options?.[0] || "";
+        return "";
+      }
+
+      function renderDerivedValue(template, bindings) {
+        return String(template || "").replace(/{{\s*([A-Za-z_][\w.-]*)\s*}}/g, (_, reference) => {
+          const value = getReference(reference, bindings);
+          return value == null ? "" : String(value);
+        });
+      }
+
+      function applyDerivedValues(analysis = state.analysis) {
+        if (!analysis) return;
+        const fieldCount = analysis.globals.size + [...analysis.collections.values()].reduce((total, collection) => total + collection.fields.size, 0);
+        for (let pass = 0; pass <= fieldCount; pass += 1) {
+          let changed = false;
+          for (const field of analysis.globals.values()) {
+            if (!field.derive) continue;
+            const next = coerceFieldValue(field, renderDerivedValue(field.derive, {}));
+            if (state.values.globals[field.key] !== next) {
+              state.values.globals[field.key] = next;
+              changed = true;
+            }
+          }
+          for (const collection of analysis.collections.values()) {
+            for (const item of state.values.collections[collection.key] || []) {
+              const bindings = Object.fromEntries([...collection.directFields].map(name => [name, item[name]]));
+              for (const alias of collection.objectAliases) bindings[alias] = item;
+              for (const field of collection.fields.values()) {
+                if (!field.derive) continue;
+                const next = coerceFieldValue(field, renderDerivedValue(field.derive, bindings));
+                if (item[field.key] !== next) {
+                  item[field.key] = next;
+                  changed = true;
+                }
+              }
+            }
+          }
+          if (!changed) break;
+        }
+      }
+
+      function syncValues() {
+        const analysis = state.analysis || analyzeConfiguration();
+        state.analysis = analysis;
+        for (const field of analysis.globals.values()) {
+          if (!(field.key in state.values.globals)) state.values.globals[field.key] = initialFieldValue(field);
+          else state.values.globals[field.key] = coerceFieldValue(field, state.values.globals[field.key]);
+        }
+        for (const collection of analysis.collections.values()) {
+          if (!Array.isArray(state.values.collections[collection.key]) || state.values.collections[collection.key].length === 0) {
+            state.values.collections[collection.key] = [newCollectionItem(collection)];
+          } else {
+            for (const item of state.values.collections[collection.key]) {
+              if (!item.__id) item.__id = uid();
+              for (const field of collection.fields.values()) {
+                if (!(field.key in item)) {
+                  const legacyPrimaryValue = collection.objectAliases.has(field.key)
+                    && !collection.fields.has("name")
+                    && Object.prototype.hasOwnProperty.call(item, "name")
+                    ? item.name
+                    : undefined;
+                  item[field.key] = legacyPrimaryValue === undefined ? initialFieldValue(field) : coerceFieldValue(field, legacyPrimaryValue);
+                }
+                else item[field.key] = coerceFieldValue(field, item[field.key]);
+              }
+            }
+          }
+        }
+        applyDerivedValues(analysis);
+      }
+
+      function getReference(reference, bindings) {
+        const parts = String(reference).split(".");
+        const alias = parts[0];
+        if (bindings && Object.prototype.hasOwnProperty.call(bindings, alias)) {
+          let value = bindings[alias];
+          const rest = parts.slice(1);
+          if (rest.length === 0 && value && typeof value === "object") {
+            if (Object.prototype.hasOwnProperty.call(value, alias)) return value[alias];
+            return value.name ?? "";
+          }
+          for (const part of rest) value = value == null ? undefined : value[part];
+          return value;
+        }
+        if (Object.prototype.hasOwnProperty.call(state.values.globals, reference)) return state.values.globals[reference];
+        return undefined;
+      }
+
+      function interpolatePath(value, bindings, diagnostics, source) {
+        return String(value).replace(/\[\[\s*([A-Za-z_][\w.-]*)\s*]]/g, (_, reference) => {
+          const resolved = getReference(reference, bindings);
+          if (resolved == null || String(resolved).trim() === "") {
+            diagnostics.push({ level: "error", title: "Required name is empty", message: `${reference} is needed by ${source}.` });
+            return `‹${reference}›`;
+          }
+          const text = String(resolved);
+          if (/[\\/\0]/.test(text) || text === "." || text === "..") {
+            diagnostics.push({ level: "error", title: "Unsafe path value", message: `${reference} must resolve to one safe folder or file-name segment.` });
+            return `‹invalid-${reference}›`;
+          }
+          return text;
+        });
+      }
+
+      function renderContent(template, bindings) {
+        const parsed = parseContentTemplate(template);
+        const renderNodes = (nodes, activeBindings) => nodes.map(node => {
+          if (node.type === "text") return node.value;
+          if (node.type === "variable") {
+            const value = getReference(node.reference, activeBindings);
+            return value == null ? `{{${node.reference}}}` : String(value);
+          }
+          if (node.type !== "block") return "";
+          if (node.kind === "for") {
+            const scopedItems = getReference(node.collection, activeBindings);
+            const items = Array.isArray(scopedItems) ? scopedItems : state.values.collections[node.collection] || [];
+            if (!items.length) return renderNodes(node.alternate, activeBindings);
+            return items.map(item => renderNodes(node.children, bindLoopItem(node, item, activeBindings))).join("");
+          }
+          const matches = predicateMatches(node.predicate, activeBindings);
+          const includeFirst = node.kind === "if" ? matches : !matches;
+          return renderNodes(includeFirst ? node.children : node.alternate, activeBindings);
+        }).join("");
+        return renderNodes(parsed.nodes, bindings || {}).replace(/^\s*\n/, "");
+      }
+
+      function validateFieldValue(field, value) {
+        const empty = value == null || String(value).trim() === "";
+        if (field.required && (empty || (field.type === "boolean" && value !== true))) return `${field.label} is required.`;
+        if (empty) return "";
+        if (field.type === "number" && !Number.isFinite(Number(value))) return `${field.label} must be a number.`;
+        if (field.type === "choice" && field.options?.length && !field.options.includes(String(value))) return `Choose a valid ${field.label.toLowerCase()} option.`;
+        if (field.pattern) {
+          try {
+            if (!new RegExp(field.pattern).test(String(value))) return field.patternMessage || `${field.label} has an invalid format.`;
+          } catch {}
+        }
+        return "";
+      }
+
+      function collectValueDiagnostics() {
+        const diagnostics = [];
+        for (const field of state.analysis?.globals.values() || []) {
+          const message = validateFieldValue(field, state.values.globals[field.key]);
+          if (message) diagnostics.push({ level: "error", title: field.label, message });
+        }
+        for (const collection of state.analysis?.collections.values() || []) {
+          for (const [index, item] of (state.values.collections[collection.key] || []).entries()) {
+            for (const field of collection.fields.values()) {
+              const message = validateFieldValue(field, item[field.key]);
+              if (message) diagnostics.push({ level: "error", title: `${field.label} · ${index + 1}`, message });
+            }
+          }
+        }
+        return diagnostics;
+      }
+
+      // Output generation engine
+      function renderOutput() {
+        const diagnostics = [...(state.analysis?.diagnostics || []), ...collectValueDiagnostics()];
+        const pathMap = new Map();
+        let fileCount = 0;
+
+        const renderNodes = (nodes, bindings = {}, basePath = "") => {
+          const output = [];
+          for (const node of nodes) {
+            if (node.type === "folder") {
+              const compute = parseCompute(node.name);
+              if (compute?.type === "group") {
+                output.push(...renderNodes(node.children, bindings, basePath));
+                continue;
+              }
+              if (compute?.type === "for") {
+                const items = state.values.collections[compute.collection] || [];
+                for (const item of items) output.push(...renderNodes(node.children, bindLoopItem(compute, item, bindings), basePath));
+                continue;
+              }
+              if (compute?.type === "when") {
+                const matches = predicateMatches(compute, bindings);
+                if ((compute.negate ? !matches : matches)) output.push(...renderNodes(node.children, bindings, basePath));
+                continue;
+              }
+              const name = interpolatePath(node.name, bindings, diagnostics, node.name);
+              const path = basePath ? `${basePath}/${name}` : name;
+              const children = renderNodes(node.children, bindings, path);
+              const result = { id: `${node.id}:${path}`, sourceNodeId: node.id, type: "folder", name, path, children };
+              registerOutputPath(result);
+              output.push(result);
+            } else {
+              const name = interpolatePath(node.name, bindings, diagnostics, node.name);
+              const path = basePath ? `${basePath}/${name}` : name;
+              const content = renderContent(node.content, bindings);
+              const result = { id: `${node.id}:${path}:${JSON.stringify(bindings)}`, sourceNodeId: node.id, type: "file", name, path, content };
+              fileCount += 1;
+              registerOutputPath(result);
+              output.push(result);
+            }
+          }
+          return output;
+        };
+
+        const registerOutputPath = result => {
+          const key = result.path.toLocaleLowerCase();
+          if (pathMap.has(key)) diagnostics.push({ level: "error", title: "Output collision", message: `${result.path} is generated more than once.` });
+          else pathMap.set(key, result);
+        };
+
+        const tree = renderNodes(state.config?.tree || []);
+        return { tree, diagnostics, pathMap, fileCount };
+      }
+
+      function recompute() {
+        state.analysis = analyzeConfiguration();
+        syncValues();
+        state.rendered = renderOutput();
+      }
+
+      // Application actions, persistence, and sharing
+      function setDirty(value = true) {
+        state.dirty = value;
+        scheduleLocalSave();
+      }
+
+      function scheduleLocalSave() {
+        clearTimeout(state.saveTimer);
+        if (state.mode === "viewer") return;
+        state.saveTimer = setTimeout(() => {
+          if (!state.config) return;
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+              savedAt: new Date().toISOString(),
+              config: state.config,
+              values: state.values,
+              mode: state.mode
+            }));
+            updateResume();
+          } catch (error) {
+            console.warn("Could not save local draft", error);
+          }
+        }, 300);
+      }
+
+      function updateResume() {
+        ui.resume = null;
+        try {
+          const draft = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          if (!draft?.config?.tree) return;
+          const date = draft.savedAt ? new Date(draft.savedAt) : null;
+          ui.resume = {
+            title: draft.config.name || "Untitled template",
+            description: date && !Number.isNaN(date.getTime())
+              ? "Saved " + date.toLocaleString()
+              : "Return to your last template."
+          };
+        } catch {}
+      }
+
+      function resumeDraft() {
+        try {
+          const draft = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          if (!draft?.config) throw new Error("No local draft was found.");
+          loadConfiguration(draft.config, draft.mode === "fill" ? "fill" : "configure", draft.values);
+        } catch (error) {
+          toast(error.message, "error");
+        }
+      }
+
+      function setMode(mode) {
+        if (state.mode === "viewer" || !["fill", "configure"].includes(mode)) return;
+        state.mode = mode;
+        recompute();
+        ensureOutputSelection();
+        scheduleLocalSave();
+      }
+
+      function selectedInfo() {
+        return findNode(state.selectedNodeId);
+      }
+
+      function selectedKind() {
+        const selected = selectedInfo();
+        if (!selected) return "Editor";
+        if (selected.node.type === "file") return "File";
+        return parseCompute(selected.node.name) ? "Logic folder" : "Folder";
+      }
+
+      function folderExplanation(compute) {
+        if (!compute) return "Appears in the generated path. Put [[value]] in the name when this segment should come from the form.";
+        if (compute.type === "group") return "Organizes “" + compute.label + "” without creating an output folder.";
+        if (compute.type === "for") return compute.destructured
+          ? "Creates its children for every item in " + compute.collection + ", exposing " + compute.bindings.join(" and ") + "."
+          : "Creates its children for every item in " + compute.collection + ", available as " + compute.alias + ".";
+        if (compute.operator === "equals") return "Creates its children when " + compute.reference + (compute.negate ? " does not equal “" : " equals “") + compute.option + "”.";
+        return "Creates its children when " + compute.reference + " is " + (compute.negate ? "unchecked." : "checked.");
+      }
+
+      function contextualSyntax() {
+        const selected = selectedInfo();
+        if (!selected) return {
+          title: "Template syntax",
+          groups: [{ label: "", rows: [
+            ["[[value]]", "Use a value in folder and file names"],
+            ["{{value}}", "Use a value in file content"]
+          ] }]
+        };
+        if (selected.node.type === "file") return {
+          title: "File syntax",
+          groups: [
+            { label: "File name", rows: [
+              ["[[name]]", "Dynamic file-name segment"],
+              ["document-[[variant]].txt", "Combine text and a value"]
+            ] },
+            { label: "Content", rows: [
+              ["{{value}}", "Insert a value"],
+              ["{{#if flag}} … {{else}} … {{/if}}", "Conditional content"],
+              ["{{#if mode=compact}} … {{/if}}", "Match a choice value"],
+              ["{{#unless mode=compact}} … {{/unless}}", "Content shown for other values"],
+              ["{{#for item in items}} … {{/for}}", "Repeat content"],
+              ["{{#for (name, variant) in items}} … {{/for}}", "Expose multiple item fields"]
+            ] }
+          ]
+        };
+        if (parseCompute(selected.node.name)) return {
+          title: "Logic folder syntax",
+          groups: [{ label: "", rows: [
+            ["(group label)", "Organize without an output folder"],
+            ["(for item in items)", "Repeat descendants"],
+            ["(for (name, variant) in items)", "Expose multiple fields directly"],
+            ["(when flag)", "Include when checked"],
+            ["(when not flag)", "Include when unchecked"],
+            ["(when mode=compact)", "Include for a choice value"],
+            ["(when not mode=compact)", "Include for other values"]
+          ] }]
+        };
+        return {
+          title: "Folder syntax",
+          groups: [{ label: "", rows: [
+            ["[[name]]", "Dynamic folder-name segment"],
+            ["section-[[variant]]", "Combine text and a value"]
+          ] }]
+        };
+      }
+
+      function findAnalyzedField(reference) {
+        if (state.analysis?.globals.has(reference)) return state.analysis.globals.get(reference);
+        for (const collection of state.analysis?.collections.values() || []) {
+          for (const field of collection.fields.values()) if (field.reference === reference) return field;
+        }
+        return null;
+      }
+
+      function fieldTypeLabel(type) {
+        return ({ auto: "Auto", boolean: "Boolean", choice: "Choice", text: "Text" })[type] || "Text";
+      }
+
+      function typeSettingFeedback(field, requestedType) {
+        const setting = resolveTypeSetting(field?.inferredType || "text", requestedType, field?.inferredOptions || []);
+        return {
+          setting,
+          message: setting.invalid
+            ? fieldTypeLabel(requestedType) + " cannot represent every value required by this template. " + fieldTypeLabel(setting.type) + " is used instead."
+            : ""
+        };
+      }
+
+      function inspectorItems() {
+        if (!state.analysis) return [];
+        const items = [];
+        const meta = (field, fallback) => field.typeSettingError
+          ? "Requested " + fieldTypeLabel(field.requestedType) + " · using " + fieldTypeLabel(field.type)
+          : field.requestedType !== "auto" && field.requestedType !== field.inferredType
+            ? fieldTypeLabel(field.inferredType) + " → " + fieldTypeLabel(field.type)
+            : fallback;
+        for (const field of state.analysis.globals.values()) {
+          items.push({ name: field.key, type: field.type, meta: meta(field, field.derive ? "Derived" : field.manual ? "Manual" : "Shared"), key: field.key, editable: true, invalid: field.typeSettingError });
+        }
+        for (const collection of state.analysis.collections.values()) {
+          const count = collection.fields.size;
+          items.push({ name: collection.key, type: "collection", meta: count + " item " + (count === 1 ? "field" : "fields"), editable: false });
+          for (const field of collection.fields.values()) {
+            items.push({ name: field.templateReference || field.reference, type: field.type, meta: meta(field, field.derive ? "Derived per item" : "Per item"), key: field.reference, editable: true, nested: true, invalid: field.typeSettingError });
+          }
+        }
+        return items;
+      }
+
+      function documentedFields() {
+        const result = [];
+        const seen = new Set();
+        const add = field => {
+          if (!field?.docs?.trim() || seen.has(field.reference)) return;
+          seen.add(field.reference);
+          result.push(field);
+        };
+        for (const field of state.analysis?.globals.values() || []) add(field);
+        for (const collection of state.analysis?.collections.values() || []) {
+          for (const field of collection.fields.values()) add(field);
+        }
+        return result;
+      }
+
+      function outputErrors() {
+        return state.rendered?.diagnostics.filter(item => item.level === "error") || [];
+      }
+
+      function updateFormValue(field, value, collection = "", index = -1) {
+        if (state.mode === "viewer") return;
+        if (collection) {
+          const item = state.values.collections[collection]?.[index];
+          if (item) item[field] = value;
+        } else {
+          state.values.globals[field] = value;
+        }
+        applyDerivedValues();
+        state.rendered = renderOutput();
+        ensureOutputSelection();
+        scheduleLocalSave();
+      }
+
+      function resetValues() {
+        state.values = { globals: {}, collections: {} };
+        recompute();
+        ensureOutputSelection();
+        scheduleLocalSave();
+      }
+
+      function addCollectionItem(key) {
+        const collection = state.analysis?.collections.get(key);
+        if (!collection) return;
+        state.values.collections[key].push(newCollectionItem(collection));
+        applyDerivedValues();
+        state.rendered = renderOutput();
+        scheduleLocalSave();
+      }
+
+      function removeCollectionItem(key, index) {
+        const list = state.values.collections[key];
+        if (list?.length > 1) list.splice(index, 1);
+        state.rendered = renderOutput();
+        ensureOutputSelection();
+        scheduleLocalSave();
+      }
+
+      function previewLanguage(name) {
+        const base = String(name || "").split(/[\\/]/).pop().toLowerCase();
+        if (base === "dockerfile" || base.startsWith("dockerfile.") || base.endsWith(".dockerfile")) return "dockerfile";
+        if (/\.ya?ml$/.test(base)) return "yaml";
+        if (/\.json$/.test(base)) return "json";
+        return "plain";
+      }
+
+      function highlightAtoms(text, mode = "plain") {
+        const pattern = /{{[A-Za-z_][\w.-]*}}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b(?:true|false|null|yes|no|on|off)\b|-?\d+(?:\.\d+)?/gi;
+        let output = "";
+        let cursor = 0;
+        for (const match of String(text).matchAll(pattern)) {
+          output += escapeHTML(text.slice(cursor, match.index));
+          const token = match[0];
+          let className = "syntax-number";
+          if (token.startsWith("{{")) className = "unresolved";
+          else if (token.startsWith('"') || token.startsWith("'")) {
+            const after = text.slice(match.index + token.length);
+            className = mode === "json" && /^\s*:/.test(after) ? "syntax-key" : "syntax-string";
+          } else if (/^(true|false|null|yes|no|on|off)$/i.test(token)) className = "syntax-boolean";
+          output += `<span class="${className}">${escapeHTML(token)}</span>`;
+          cursor = match.index + token.length;
+        }
+        return output + escapeHTML(text.slice(cursor));
+      }
+
+      function splitYamlComment(line) {
+        let quote = "";
+        for (let index = 0; index < line.length; index += 1) {
+          const character = line[index];
+          if (quote) {
+            if (character === quote && line[index - 1] !== "\\") quote = "";
+          } else if (character === '"' || character === "'") quote = character;
+          else if (character === "#" && (index === 0 || /\s/.test(line[index - 1]))) return [line.slice(0, index), line.slice(index)];
+        }
+        return [line, ""];
+      }
+
+      function highlightYamlLine(line) {
+        const [body, comment] = splitYamlComment(line);
+        const mapping = body.match(/^(\s*)(-\s+)?([A-Za-z0-9_.-]+)(\s*:\s*)(.*)$/);
+        let output;
+        if (mapping) {
+          output = escapeHTML(mapping[1] + (mapping[2] || ""));
+          output += `<span class="syntax-key">${escapeHTML(mapping[3])}</span>${escapeHTML(mapping[4])}`;
+          output += highlightAtoms(mapping[5], "yaml");
+        } else {
+          output = highlightAtoms(body, "yaml");
+        }
+        if (comment) output += `<span class="syntax-comment">${escapeHTML(comment)}</span>`;
+        return output;
+      }
+
+      function highlightDockerArguments(text) {
+        const pattern = /{{[A-Za-z_][\w.-]*}}|--[a-z][\w-]*(?:=[^\s]+)?|\$\{?[A-Za-z_][A-Za-z0-9_]*}?|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/gi;
+        let output = "";
+        let cursor = 0;
+        for (const match of String(text).matchAll(pattern)) {
+          output += highlightAtoms(text.slice(cursor, match.index));
+          const token = match[0];
+          const className = token.startsWith("{{") ? "unresolved" : token.startsWith("--") || token.startsWith("$") ? "syntax-variable" : "syntax-string";
+          output += `<span class="${className}">${escapeHTML(token)}</span>`;
+          cursor = match.index + token.length;
+        }
+        return output + highlightAtoms(text.slice(cursor));
+      }
+
+      function highlightDockerfileLine(line) {
+        if (/^\s*#/.test(line)) return `<span class="syntax-comment">${escapeHTML(line)}</span>`;
+        const instruction = line.match(/^(\s*)([A-Za-z][A-Za-z0-9_-]*)(\s+|$)(.*)$/);
+        if (!instruction) return highlightDockerArguments(line);
+        const instructions = new Set(["ADD", "ARG", "CMD", "COPY", "ENTRYPOINT", "ENV", "EXPOSE", "FROM", "HEALTHCHECK", "LABEL", "MAINTAINER", "ONBUILD", "RUN", "SHELL", "STOPSIGNAL", "USER", "VOLUME", "WORKDIR"]);
+        if (!instructions.has(instruction[2].toUpperCase())) return highlightDockerArguments(line);
+        return `${escapeHTML(instruction[1])}<span class="syntax-keyword">${escapeHTML(instruction[2])}</span>${escapeHTML(instruction[3])}${highlightDockerArguments(instruction[4])}`;
+      }
+
+      function highlightCodeLine(line, language) {
+        if (language === "yaml") return highlightYamlLine(line);
+        if (language === "json") return highlightAtoms(line, "json");
+        if (language === "dockerfile") return highlightDockerfileLine(line);
+        return highlightAtoms(line);
+      }
+
+      function renderCodePreview(content, name = "") {
+        const lines = String(content).split("\n");
+        const language = previewLanguage(name);
+        return `<pre class="code-preview"><code>${lines.map((line, index) => {
+          const safe = line ? highlightCodeLine(line, language) : " ";
+          return `<span class="code-line"><span class="line-number">${index + 1}</span><span class="line-content">${safe}</span></span>`;
+        }).join("")}</code></pre>`;
+      }
+
+      function flattenOutputFiles(nodes, result = []) {
+        for (const node of nodes || []) {
+          if (node.type === "file") result.push(node);
+          else flattenOutputFiles(node.children, result);
+        }
+        return result;
+      }
+
+      function findOutputFile(path) {
+        return flattenOutputFiles(state.rendered?.tree || []).find(file => file.path === path) || null;
+      }
+
+      function ensureOutputSelection() {
+        const files = flattenOutputFiles(state.rendered?.tree || []);
+        if (!files.some(file => file.path === state.selectedOutputPath)) state.selectedOutputPath = files[0]?.path || null;
+      }
+
+      function fileLanguage(name) {
+        if (previewLanguage(name) === "dockerfile") return "Dockerfile";
+        const extension = String(name).split(".").pop()?.toLowerCase();
+        const labels = { yaml: "YAML", yml: "YAML", json: "JSON", js: "JavaScript", ts: "TypeScript", html: "HTML", css: "CSS", md: "Markdown", sh: "Shell", py: "Python", txt: "Plain text" };
+        return labels[extension] || (extension ? extension.toUpperCase() : "Plain text");
+      }
+
+      function normalizeValuesPayload(input) {
+        if (!input || typeof input !== "object" || Array.isArray(input)) return { globals: {}, collections: {} };
+        const primitive = value => ["string", "number", "boolean"].includes(typeof value) || value == null;
+        const globals = Object.fromEntries(Object.entries(input.globals || {}).filter(([key, value]) => /^[A-Za-z_][\w.-]*$/.test(key) && primitive(value)));
+        const collections = Object.fromEntries(Object.entries(input.collections || {}).filter(([key, value]) => /^[A-Za-z_][\w.-]*$/.test(key) && Array.isArray(value)).map(([key, rows]) => [key, rows.map(row => {
+          if (!row || typeof row !== "object" || Array.isArray(row)) return { __id: uid() };
+          const entries = Object.entries(row).filter(([field, value]) => field === "__id" || (/^[A-Za-z_][\w.-]*$/.test(field) && primitive(value)));
+          const item = Object.fromEntries(entries);
+          item.__id = typeof item.__id === "string" && item.__id ? item.__id : uid();
+          return item;
+        })]));
+        return { globals, collections };
+      }
+
+      function snapshotFormValues() {
+        const globals = Object.fromEntries([...state.analysis.globals.values()].map(field => [field.key, state.values.globals[field.key]]));
+        const collections = Object.fromEntries([...state.analysis.collections.values()].map(collection => [collection.key, (state.values.collections[collection.key] || []).map(item => Object.fromEntries([
+          ["__id", item.__id || uid()],
+          ...[...collection.fields.values()].map(field => [field.key, item[field.key]])
+        ]))]));
+        return normalizeValuesPayload({ globals, collections });
+      }
+
+      function loadConfiguration(config, mode = "fill", values = null) {
+        state.config = validateAndNormalizeConfig(config);
+        state.mode = ["configure", "fill", "viewer"].includes(mode) ? mode : "fill";
+        state.selectedNodeId = null;
+        state.selectedOutputPath = null;
+        state.values = normalizeValuesPayload(values);
+        state.collapsed.clear();
+        state.outputCollapsed.clear();
+        state.dirty = false;
+        recompute();
+        ensureOutputSelection();
+        scheduleLocalSave();
+      }
+
+      function showDialog(id, selector = "input, select, textarea, button.primary") {
+        nextTick(() => {
+          const dialog = document.getElementById(id);
+          if (!dialog) return;
+          if (!dialog.open) dialog.showModal();
+          dialog.querySelector(selector)?.focus();
+        });
+      }
+
+      function closeDialog(id) {
+        document.getElementById(id)?.close();
+      }
+
+      function openCreateDialog(kind, placement = "sibling") {
+        const container = findContainerForSelection(placement);
+        state.pendingCreateParentId = container.parentId;
+        Object.assign(ui.create, {
+          kind,
+          parentLabel: container.label,
+          computeType: "group",
+          name: "",
+          content: "",
+          collection: "items",
+          binding: "item",
+          reference: "enabled",
+          label: "group"
+        });
+        showDialog("createDialog");
+      }
+
+      function createItemFromDialog() {
+        const draft = ui.create;
+        let node;
+        if (draft.kind === "file") {
+          node = { id: uid(), type: "file", name: draft.name.trim(), content: draft.content };
+        } else if (draft.kind === "folder") {
+          node = { id: uid(), type: "folder", name: draft.name.trim(), children: [] };
+        } else {
+          const names = {
+            for: "(for " + draft.binding.trim() + " in " + draft.collection.trim() + ")",
+            when: "(when " + draft.reference.trim() + ")",
+            "when-not": "(when not " + draft.reference.trim() + ")",
+            group: "(group " + draft.label.trim() + ")"
+          };
+          node = { id: uid(), type: "folder", name: names[draft.computeType] || names.group, children: [] };
+        }
+        if (!node.name) return toast("A name is required.", "error"), false;
+        if (draft.kind === "compute" && !parseCompute(node.name)) {
+          toast("Use a valid binding, condition, or comparison such as mode=advanced.", "error");
+          return false;
+        }
+        const parent = state.pendingCreateParentId ? findNode(state.pendingCreateParentId)?.node : null;
+        (parent?.type === "folder" ? parent.children : state.config.tree).push(node);
+        state.selectedNodeId = node.id;
+        recompute();
+        setDirty();
+        closeDialog("createDialog");
+        return true;
+      }
+
+      function selectNode(id) {
+        state.selectedNodeId = id;
+      }
+
+      function toggleNode(id) {
+        state.collapsed.has(id) ? state.collapsed.delete(id) : state.collapsed.add(id);
+      }
+
+      function renameSelected(value) {
+        const found = selectedInfo();
+        if (!found || state.mode === "viewer") return;
+        found.node.name = value;
+        recompute();
+        setDirty();
+      }
+
+      function updateFileContent(value) {
+        const found = selectedInfo();
+        if (!found || found.node.type !== "file" || state.mode === "viewer") return;
+        found.node.content = value;
+        recompute();
+        setDirty();
+      }
+
+      function requestDeleteSelected() {
+        const found = selectedInfo();
+        if (!found) return;
+        state.pendingDeleteId = found.node.id;
+        openConfirmation(
+          "delete-node",
+          "Delete “" + found.node.name + "”?",
+          found.node.type === "folder" ? "Everything inside this folder will also be removed." : "This file will be removed from the template.",
+          "Delete",
+          true
+        );
+      }
+
+      function removeSelectedNode() {
+        const found = findNode(state.pendingDeleteId);
+        if (!found) return;
+        const container = found.parent ? found.parent.children : state.config.tree;
+        const index = container.findIndex(node => node.id === found.node.id);
+        if (index >= 0) container.splice(index, 1);
+        state.selectedNodeId = found.parent?.id || null;
+        state.pendingDeleteId = null;
+        recompute();
+        setDirty();
+        toast("Item deleted.", "success");
+      }
+
+      function cloneNode(node) {
+        const clone = deepClone(node);
+        walkNodes([clone], child => { child.id = uid(); });
+        clone.name = clone.type === "file" ? clone.name.replace(/(\.[^.]*)?$/, " copy$1") : clone.name + " copy";
+        return clone;
+      }
+
+      function duplicateSelected() {
+        const found = selectedInfo();
+        if (!found) return;
+        const container = found.parent ? found.parent.children : state.config.tree;
+        const index = container.findIndex(node => node.id === found.node.id);
+        const clone = cloneNode(found.node);
+        container.splice(index + 1, 0, clone);
+        state.selectedNodeId = clone.id;
+        recompute();
+        setDirty();
+      }
+
+      function moveSelected(delta) {
+        const found = selectedInfo();
+        if (!found) return;
+        const container = found.parent ? found.parent.children : state.config.tree;
+        const index = container.findIndex(node => node.id === found.node.id);
+        const target = index + delta;
+        if (index < 0 || target < 0 || target >= container.length) return;
+        [container[index], container[target]] = [container[target], container[index]];
+        setDirty();
+      }
+
+      function selectOutput(path) {
+        if (findOutputFile(path)) state.selectedOutputPath = path;
+        else toggleOutput(path);
+      }
+
+      function toggleOutput(path) {
+        state.outputCollapsed.has(path) ? state.outputCollapsed.delete(path) : state.outputCollapsed.add(path);
+      }
+
+      function copyOutput() {
+        const file = findOutputFile(state.selectedOutputPath);
+        if (!file) return;
+        copyText(file.content).then(() => toast("File content copied.", "success")).catch(() => toast("Copy is unavailable here.", "error"));
+      }
+
+      function downloadOutput() {
+        const file = findOutputFile(state.selectedOutputPath);
+        if (file) downloadBlob(file.name, file.content, "text/plain;charset=utf-8");
+      }
+
+      function downloadBlob(filename, content, type = "application/json") {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function saveConfiguration() {
+        if (!state.config) return;
+        const payload = JSON.stringify(state.config, null, 2) + "\n";
+        downloadBlob(`${slugifyFileName(state.config.name)}.template.json`, payload);
+        state.dirty = false;
+        scheduleLocalSave();
+        toast("Configuration saved.", "success");
+      }
+
+      function bytesToBase64Url(bytes) {
+        let binary = "";
+        for (let index = 0; index < bytes.length; index += 0x8000) {
+          binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+        }
+        return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+      }
+
+      function base64UrlToBytes(value) {
+        const normalized = String(value).replace(/-/g, "+").replace(/_/g, "/");
+        const binary = atob(normalized + "=".repeat((4 - normalized.length % 4) % 4));
+        return Uint8Array.from(binary, character => character.charCodeAt(0));
+      }
+
+      async function encodeShareCode(payload) {
+        const bytes = new TextEncoder().encode(JSON.stringify(payload));
+        if (globalThis.CompressionStream) {
+          try {
+            const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip"));
+            const compressed = new Uint8Array(await new Response(stream).arrayBuffer());
+            return `g.${bytesToBase64Url(compressed)}`;
+          } catch {}
+        }
+        return `j.${bytesToBase64Url(bytes)}`;
+      }
+
+      function extractShareCode(value) {
+        let candidate = String(value || "").trim();
+        if (!candidate) throw new Error("Paste a share link or code.");
+        const hashIndex = candidate.indexOf("#");
+        if (hashIndex >= 0) candidate = candidate.slice(hashIndex + 1);
+        candidate = candidate.replace(/^#/, "");
+        if (candidate.includes("template=") || candidate.includes("view=")) {
+          const params = new URLSearchParams(candidate);
+          candidate = params.get("view") || params.get("template") || "";
+        }
+        if (!/^[gj]\.[A-Za-z0-9_-]+$/.test(candidate)) throw new Error("This is not a valid Boilerplater share code.");
+        return candidate;
+      }
+
+      async function decodeShareCode(value) {
+        const code = extractShareCode(value);
+        const [format, payload] = code.split(".", 2);
+        let bytes = base64UrlToBytes(payload);
+        if (format === "g") {
+          if (!globalThis.DecompressionStream) throw new Error("This browser cannot open compressed template links.");
+          const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+          bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+        }
+        const parsed = JSON.parse(new TextDecoder().decode(bytes));
+        if (parsed?.view === "viewer" && parsed.configuration) {
+          return { code, config: validateAndNormalizeConfig(parsed.configuration), values: normalizeValuesPayload(parsed.values), mode: "viewer", hashKey: "view" };
+        }
+        return { code, config: validateAndNormalizeConfig(parsed), values: null, mode: "fill", hashKey: "template" };
+      }
+
+      async function copyText(value) {
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch {
+          const field = document.createElement("textarea");
+          field.value = value;
+          field.style.position = "fixed";
+          field.style.opacity = "0";
+          document.body.appendChild(field);
+          field.select();
+          const copied = document.execCommand?.("copy");
+          field.remove();
+          if (!copied) throw new Error("Copy is unavailable here.");
+        }
+      }
+
+      async function openEncodedShareDialog(payload, hashKey, title, completed = false) {
+        try {
+          state.shareCode = await encodeShareCode(payload);
+          state.shareHashKey = hashKey;
+          const url = new URL(location.href);
+          url.hash = hashKey + "=" + state.shareCode;
+          const localFile = location.protocol === "file:";
+          Object.assign(ui.share, {
+            action: "copy-link",
+            title,
+            description: (completed ? "The completed result" : "The configuration") + (state.shareCode.startsWith("g.") ? " is compressed into the URL fragment." : " is encoded in the URL fragment."),
+            label: "Share link",
+            value: url.toString(),
+            note: localFile
+              ? "A full file link only works on this device. Copy the code when sharing with someone who has their own copy of this HTML."
+              : "Opening this link loads " + (completed ? "the locked completed result" : "the template") + " automatically. Link length: " + url.toString().length.toLocaleString() + " characters.",
+            readOnly: true,
+            secondary: localFile
+          });
+          showDialog("shareDialog", "textarea");
+        } catch (error) {
+          toast(error.message || "Could not create a share link.", "error");
+        }
+      }
+
+      function openShareDialog() {
+        if (state.config) return openEncodedShareDialog(state.config, "template", "Share template");
+      }
+
+      function openViewerShareDialog() {
+        if (!state.config || state.mode !== "fill") return;
+        if (outputErrors().length) return toast("Resolve the form errors before sharing a locked result.", "error");
+        return openEncodedShareDialog(
+          { shareVersion: 1, view: "viewer", configuration: state.config, values: snapshotFormValues() },
+          "view",
+          "Share completed result",
+          true
+        );
+      }
+
+      function openShareCodeDialog() {
+        state.shareCode = "";
+        state.shareHashKey = "template";
+        Object.assign(ui.share, {
+          action: "open-code",
+          title: "Open shared template",
+          description: "Paste either a full link or the code beginning with g. or j.",
+          label: "Share link or code",
+          value: "",
+          note: "Template links open in Preview mode. Completed-result links open in locked Viewer mode.",
+          readOnly: false,
+          secondary: false
+        });
+        showDialog("shareDialog", "textarea");
+      }
+
+      async function handleShareSubmit(action = ui.share.action) {
+        try {
+          if (action === "copy-link") {
+            await copyText(ui.share.value);
+            toast("Share link copied.", "success");
+          } else if (action === "copy-code") {
+            await copyText("#" + state.shareHashKey + "=" + state.shareCode);
+            toast("Share code copied.", "success");
+          } else if (action === "open-code") {
+            const decoded = await decodeShareCode(ui.share.value);
+            state.shareHashKey = decoded.hashKey;
+            try {
+              history.replaceState(null, "", location.pathname + location.search + "#" + decoded.hashKey + "=" + decoded.code);
+            } catch {
+              try { location.hash = decoded.hashKey + "=" + decoded.code; } catch {}
+            }
+            loadConfiguration(decoded.config, decoded.mode, decoded.values);
+            toast(decoded.mode === "viewer" ? "Completed result opened." : "Shared template opened.", "success");
+          }
+          closeDialog("shareDialog");
+        } catch (error) {
+          toast(error.message || "Could not use this share code.", "error");
+        }
+      }
+
+      async function readConfigurationFile(file, input = null) {
+        if (!file) return;
+        try {
+          const parsed = JSON.parse(await file.text());
+          loadConfiguration(parsed, "fill");
+          toast("Opened " + file.name + ".", "success");
+        } catch (error) {
+          toast(error.message || "Could not open this configuration.", "error");
+        } finally {
+          if (input) input.value = "";
+        }
+      }
+
+      function setTheme(theme) {
+        ui.theme = theme;
+        document.documentElement.dataset.theme = theme;
+        try { localStorage.setItem(THEME_KEY, theme); } catch {}
+      }
+
+      function initializeTheme() {
+        let theme = "light";
+        try {
+          theme = localStorage.getItem(THEME_KEY) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        } catch {}
+        setTheme(theme);
+      }
+
+      function toast(message, type = "success") {
+        const item = { id: uid(), message: String(message || ""), type };
+        ui.toasts.push(item);
+        setTimeout(() => {
+          const index = ui.toasts.findIndex(entry => entry.id === item.id);
+          if (index >= 0) ui.toasts.splice(index, 1);
+        }, 3600);
+      }
+
+      function openConfirmation(action, title, description, label, danger = false) {
+        Object.assign(ui.confirm, { action, title, description, label, danger });
+        showDialog("confirmDialog", "button.primary");
+      }
+
+      function confirmAction() {
+        const action = ui.confirm.action;
+        ui.confirm.action = "";
+        closeDialog("confirmDialog");
+        if (action === "delete-node") removeSelectedNode();
+        else if (action === "new-config") loadConfiguration(blankConfig(), "configure");
+        else if (action === "open-config") document.getElementById("configFileInput")?.click();
+      }
+
+      function cancelConfirmation() {
+        state.pendingDeleteId = null;
+        ui.confirm.action = "";
+        closeDialog("confirmDialog");
+      }
+
+      function requestNewConfiguration() {
+        if (!state.config || !state.dirty) return loadConfiguration(blankConfig(), "configure");
+        openConfirmation("new-config", "Start a new template?", "Save the current configuration first if you want a portable copy.", "Start new");
+      }
+
+      function requestOpenConfiguration() {
+        if (!state.config || !state.dirty) return document.getElementById("configFileInput")?.click();
+        openConfirmation("open-config", "Open another configuration?", "Your current configuration has changes that have not been downloaded.", "Open file");
+      }
+
+      function variableTypeState() {
+        const field = ui.variable.originalKey ? findAnalyzedField(ui.variable.originalKey) : null;
+        return typeSettingFeedback(field, ui.variable.type);
+      }
+
+      function openVariableDialog(reference = null) {
+        const isNew = !reference;
+        const field = reference ? findAnalyzedField(reference) : null;
+        const definition = reference ? (state.config.variables?.[reference] || {}) : { manual: true };
+        const requestedType = definition.type || "auto";
+        const setting = typeSettingFeedback(field, requestedType).setting;
+        Object.assign(ui.variable, {
+          isNew,
+          originalKey: reference || "",
+          name: reference || "",
+          label: definition.label || "",
+          type: requestedType,
+          default: Object.prototype.hasOwnProperty.call(definition, "default") ? definition.default : setting.type === "boolean" ? false : "",
+          docs: definition.docs || "",
+          description: definition.description || "",
+          required: Boolean(definition.required),
+          pattern: definition.pattern || "",
+          patternMessage: definition.patternMessage || "",
+          derive: definition.derive || "",
+          advanced: Boolean(definition.description || definition.required || definition.pattern || definition.patternMessage || definition.derive)
+        });
+        showDialog("variableDialog");
+      }
+
+      function saveVariableDefinition() {
+        const draft = ui.variable;
+        const previousKey = draft.originalKey;
+        const key = draft.name.trim();
+        if (!/^[A-Za-z_][\w.-]*$/.test(key)) return toast("Use letters, numbers, dots, dashes, or underscores for the variable name.", "error"), false;
+        const existingField = previousKey ? findAnalyzedField(previousKey) : null;
+        const existingDefinition = previousKey ? (state.config.variables?.[previousKey] || {}) : {};
+        const isManual = draft.isNew || Boolean(existingDefinition.manual || existingField?.manual);
+        if (key !== previousKey && (state.analysis.globals.has(key) || state.analysis.collections.has(key) || findAnalyzedField(key) || Object.prototype.hasOwnProperty.call(state.config.variables || {}, key))) {
+          return toast("A variable named " + key + " already exists.", "error"), false;
+        }
+        const typeSetting = resolveTypeSetting(existingField?.inferredType || "text", draft.type, existingField?.inferredOptions || []);
+        const pattern = draft.pattern;
+        if (pattern) {
+          try { new RegExp(pattern); }
+          catch { return toast("The validation pattern is not a valid regular expression.", "error"), false; }
+        }
+        const definition = {};
+        if (isManual) definition.manual = true;
+        if (draft.type !== "auto") definition.type = draft.type;
+        if (draft.label.trim()) definition.label = draft.label.trim();
+        if (draft.description.trim()) definition.description = draft.description.trim();
+        if (draft.docs.trim()) definition.docs = draft.docs;
+        if (draft.required) definition.required = true;
+        if (pattern) definition.pattern = pattern;
+        if (draft.patternMessage.trim()) definition.patternMessage = draft.patternMessage.trim();
+        if (draft.derive.trim()) definition.derive = draft.derive.trim();
+        const effectiveType = typeSetting.type;
+        const options = typeSetting.options || [];
+        if (effectiveType === "choice" && draft.default !== "" && !options.includes(String(draft.default))) {
+          return toast("The default must match one of the choices.", "error"), false;
+        }
+        if (!definition.derive && effectiveType === "boolean") definition.default = String(draft.default) === "true" || draft.default === true;
+        else if (!definition.derive && draft.default !== "") definition.default = String(draft.default);
+
+        state.config.variables ||= {};
+        if (previousKey && previousKey !== key) {
+          delete state.config.variables[previousKey];
+          if (Object.prototype.hasOwnProperty.call(state.values.globals, previousKey)) {
+            state.values.globals[key] = state.values.globals[previousKey];
+            delete state.values.globals[previousKey];
+          }
+        }
+        state.config.variables[key] = definition;
+        recompute();
+        setDirty();
+        closeDialog("variableDialog");
+        toast(draft.isNew ? "Variable added." : "Variable settings saved.", "success");
+        return true;
+      }
+
+      function removeVariableDefinition() {
+        const key = ui.variable.originalKey;
+        if (!key || !state.config.variables?.[key]) return;
+        const wasManual = Boolean(state.config.variables[key].manual);
+        delete state.config.variables[key];
+        if (wasManual) delete state.values.globals[key];
+        recompute();
+        setDirty();
+        closeDialog("variableDialog");
+        toast(wasManual ? "Variable removed." : "Variable settings reset.", "success");
+      }
+
+      // Declarative Vue presentation layer
+      const FileIcon = {
+        props: { name: { type: String, default: "" } },
+        setup(props) {
+          return { markup: computed(() => renderFileIcon(props.name)) };
+        },
+        template: `<span class="file-icon-host" v-html="markup"></span>`
+      };
+
+      const DiagnosticItem = {
+        props: { item: { type: Object, required: true } },
+        template: `<div class="diagnostic" :class="item.level || 'warning'"><strong>{{ item.title }}</strong>{{ item.message }}</div>`
+      };
+
+      const ConfigTreeNode = {
+        name: "ConfigTreeNode",
+        props: {
+          node: { type: Object, required: true },
+          depth: { type: Number, default: 0 }
+        },
+        setup(props) {
+          const isFolder = computed(() => props.node.type === "folder");
+          const computeNode = computed(() => isFolder.value ? parseCompute(props.node.name) : null);
+          const collapsed = computed(() => state.collapsed.has(props.node.id));
+          const selected = computed(() => state.selectedNodeId === props.node.id);
+          const choose = () => selectNode(props.node.id);
+          const toggle = () => toggleNode(props.node.id);
+          const onKey = event => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              choose();
+            }
+          };
+          return { state, icons, isFolder, computeNode, collapsed, selected, choose, toggle, onKey };
+        },
+        template: `
+          <div class="tree-node" role="none">
+            <div class="tree-row" :class="{ selected }" tabindex="0" role="treeitem"
+              :aria-level="depth + 1" :aria-selected="selected"
+              :aria-expanded="isFolder ? String(!collapsed) : undefined"
+              :style="{ '--depth': depth }" @click="choose" @keydown="onKey">
+              <span class="tree-indent"></span>
+              <button v-if="isFolder" class="tree-toggle" :class="{ open: !collapsed }" type="button"
+                :aria-label="(collapsed ? 'Expand ' : 'Collapse ') + node.name" @click.stop="toggle" v-html="icons.chevron"></button>
+              <span v-else class="tree-toggle"></span>
+              <span class="tree-icon" :class="{ compute: computeNode }">
+                <span v-if="computeNode" v-html="icons.compute"></span>
+                <span v-else-if="isFolder" v-html="collapsed ? icons.folder : icons.folderOpen"></span>
+                <file-icon v-else :name="node.name"></file-icon>
+              </span>
+              <span class="tree-name" :title="node.name">{{ node.name || "(empty)" }}</span>
+              <span v-if="computeNode" class="tree-badge">{{ computeNode.type }}</span>
+            </div>
+            <div v-if="isFolder && !collapsed" role="group">
+              <config-tree-node v-for="child in node.children" :key="child.id" :node="child" :depth="depth + 1"></config-tree-node>
+            </div>
+          </div>`
+      };
+
+      const OutputTreeNode = {
+        name: "OutputTreeNode",
+        props: {
+          node: { type: Object, required: true },
+          depth: { type: Number, default: 0 }
+        },
+        setup(props) {
+          const isFolder = computed(() => props.node.type === "folder");
+          const collapsed = computed(() => state.outputCollapsed.has(props.node.path));
+          const selected = computed(() => state.selectedOutputPath === props.node.path);
+          const choose = () => selectOutput(props.node.path);
+          const toggle = () => toggleOutput(props.node.path);
+          const onKey = event => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              choose();
+            }
+          };
+          return { icons, isFolder, collapsed, selected, choose, toggle, onKey };
+        },
+        template: `
+          <div class="tree-node" role="none">
+            <div class="tree-row" :class="{ 'output-selected': selected }" tabindex="0" role="treeitem"
+              :aria-level="depth + 1" :aria-selected="selected"
+              :aria-expanded="isFolder ? String(!collapsed) : undefined"
+              :style="{ '--depth': depth }" @click="choose" @keydown="onKey">
+              <span class="tree-indent"></span>
+              <button v-if="isFolder" class="tree-toggle" :class="{ open: !collapsed }" type="button"
+                :aria-label="(collapsed ? 'Expand ' : 'Collapse ') + node.name" @click.stop="toggle" v-html="icons.chevron"></button>
+              <span v-else class="tree-toggle"></span>
+              <span class="tree-icon">
+                <span v-if="isFolder" v-html="collapsed ? icons.folder : icons.folderOpen"></span>
+                <file-icon v-else :name="node.name"></file-icon>
+              </span>
+              <span class="tree-name" :title="node.name">{{ node.name }}</span>
+            </div>
+            <div v-if="isFolder && !collapsed" role="group">
+              <output-tree-node v-for="child in node.children" :key="child.path" :node="child" :depth="depth + 1"></output-tree-node>
+            </div>
+          </div>`
+      };
+
+      const FieldControl = {
+        props: {
+          field: { type: Object, required: true },
+          collection: { type: String, default: "" },
+          index: { type: Number, default: -1 },
+          readOnly: { type: Boolean, default: false }
+        },
+        setup(props) {
+          const value = computed(() => props.collection
+            ? state.values.collections[props.collection]?.[props.index]?.[props.field.key]
+            : state.values.globals[props.field.key]);
+          const inputId = computed(() => "field-" + (props.collection ? props.collection + "-" + props.index + "-" : "global-") + props.field.key.replace(/[^a-zA-Z0-9_-]/g, "-"));
+          const supportId = computed(() => inputId.value + "-support");
+          const error = computed(() => validateFieldValue(props.field, value.value));
+          const locked = computed(() => Boolean(props.field.derive) || props.readOnly);
+          const lockBadge = computed(() => props.field.derive ? "Derived" : props.readOnly ? "Locked" : "");
+          const update = event => updateFormValue(props.field.key, event.target.type === "checkbox" ? event.target.checked : event.target.value, props.collection, props.index);
+          return { value, inputId, supportId, error, locked, lockBadge, update };
+        },
+        template: `
+          <div class="field">
+            <div v-if="field.type === 'boolean'" class="checkbox-row" :class="{ invalid: error, locked }">
+              <input :id="inputId" type="checkbox" :checked="Boolean(value)" :disabled="locked" :required="field.required"
+                :aria-invalid="Boolean(error)" :aria-describedby="field.description || error ? supportId : undefined" @change="update">
+              <label :for="inputId">{{ field.label }}<span v-if="field.required" class="required-mark" aria-hidden="true">*</span></label>
+              <span v-if="lockBadge" class="badge">{{ lockBadge }}</span>
+            </div>
+            <template v-else>
+              <div class="field-label-line">
+                <label :for="inputId">{{ field.label }}<span v-if="field.required" class="required-mark" aria-hidden="true">*</span></label>
+                <span v-if="lockBadge" class="badge">{{ lockBadge }}</span>
+              </div>
+              <select v-if="field.type === 'choice'" class="select" :class="{ invalid: error }" :id="inputId"
+                :value="value" :disabled="locked" :required="field.required" :aria-invalid="Boolean(error)"
+                :aria-describedby="field.description || error ? supportId : undefined" @change="update">
+                <option v-for="option in field.options || []" :key="option" :value="option">{{ option }}</option>
+              </select>
+              <input v-else class="input" :class="{ invalid: error }" :id="inputId" :type="field.type === 'number' ? 'number' : 'text'"
+                :value="value ?? ''" autocomplete="off" :readonly="locked" :required="field.required" :pattern="field.pattern || undefined"
+                :aria-invalid="Boolean(error)" :aria-describedby="field.description || error ? supportId : undefined" @input="update">
+            </template>
+            <div v-if="field.description || error" :id="supportId">
+              <div v-if="field.description" class="field-description">{{ field.description }}</div>
+              <div v-if="error" class="field-error">{{ error }}</div>
+            </div>
+          </div>`
+      };
+
+      const GeneratedForm = {
+        props: { readOnly: { type: Boolean, default: false } },
+        setup() {
+          const globals = computed(() => [...(state.analysis?.globals.values() || [])]);
+          const collections = computed(() => [...(state.analysis?.collections.values() || [])]);
+          const hasFields = computed(() => globals.value.length || collections.value.length);
+          const items = collection => state.values.collections[collection.key] || [];
+          const fields = collection => [...collection.fields.values()];
+          const title = (collection, item, index) => {
+            const all = fields(collection);
+            const titleField = all.find(field => field.key === "name" && String(item[field.key] ?? "").trim())
+              || all.find(field => collection.directFields.has(field.key) && String(item[field.key] ?? "").trim())
+              || all.find(field => String(item[field.key] ?? "").trim());
+            return titleField ? String(item[titleField.key]).trim() : singularize(collection.label) + " " + (index + 1);
+          };
+          return { state, icons, globals, collections, hasFields, items, fields, title, setMode, addCollectionItem, removeCollectionItem, singularize };
+        },
+        template: `
+          <div v-if="hasFields">
+            <section v-if="globals.length" class="form-section">
+              <div class="form-section-title"><span>Shared values</span></div>
+              <field-control v-for="field in globals" :key="field.reference" :field="field" :read-only="readOnly"></field-control>
+            </section>
+            <section v-for="collection in collections" :key="collection.key" class="form-section">
+              <div class="form-section-title">
+                <span>{{ collection.label }}</span>
+                <span v-if="readOnly" class="badge">{{ items(collection).length }}</span>
+                <button v-else class="button small" type="button" @click="addCollectionItem(collection.key)">
+                  <span v-html="icons.plus"></span> Add {{ singularize(collection.label).toLowerCase() }}
+                </button>
+              </div>
+              <article v-for="(item, index) in items(collection)" :key="item.__id || index" class="collection-card">
+                <div class="collection-card-header">
+                  <span class="collection-card-title">{{ title(collection, item, index) }}</span>
+                  <button v-if="!readOnly" class="icon-button" type="button" :disabled="items(collection).length <= 1"
+                    aria-label="Remove item" title="Remove item" @click="removeCollectionItem(collection.key, index)" v-html="icons.trash"></button>
+                </div>
+                <div class="collection-card-body">
+                  <field-control v-for="field in fields(collection)" :key="field.reference" :field="field"
+                    :collection="collection.key" :index="index" :read-only="readOnly"></field-control>
+                </div>
+              </article>
+            </section>
+          </div>
+          <div v-else class="empty-state">
+            <div class="empty-state-inner">
+              <div class="empty-state-icon" v-html="icons.braces"></div>
+              <strong>No form fields</strong>
+              <p>{{ readOnly ? "This result does not contain any form values." : "Add dynamic values to folders, filenames, or file contents." }}</p>
+              <button v-if="!readOnly" class="button" type="button" @click="setMode('configure')">Open Configure mode</button>
+            </div>
+          </div>`
+      };
+
+      const TemplateGuide = {
+        props: { always: { type: Boolean, default: false } },
+        setup(props) {
+          const markdown = computed(() => state.config?.instructions || "");
+          const show = computed(() => props.always || markdown.value.trim());
+          const html = computed(() => markdown.value.trim() ? renderMarkdown(markdown.value) : "");
+          return { show, html };
+        },
+        template: `
+          <section v-if="show" class="template-guide" aria-label="Template guide">
+            <div class="template-guide-label">Template guide</div>
+            <div v-if="html" class="template-guide-content" v-html="html"></div>
+            <div v-else class="template-guide-empty">Add Markdown instructions in Template details.</div>
+          </section>`
+      };
+
+      const VariableDocs = {
+        setup() {
+          return { fields: computed(documentedFields), renderMarkdown };
+        },
+        template: `
+          <section v-if="fields.length" class="template-guide variable-docs" aria-label="Form documentation">
+            <div class="template-guide-label">Form documentation</div>
+            <article v-for="field in fields" :key="field.reference" class="variable-doc">
+              <h3 class="variable-doc-title">{{ field.label }}</h3>
+              <div class="template-guide-content" v-html="renderMarkdown(field.docs)"></div>
+            </article>
+          </section>`
+      };
+
+      const SyntaxHelp = {
+        setup() {
+          return { syntax: computed(contextualSyntax) };
+        },
+        template: `
+          <details class="syntax-disclosure">
+            <summary>{{ syntax.title }}</summary>
+            <div class="syntax-list">
+              <template v-for="(group, groupIndex) in syntax.groups" :key="groupIndex">
+                <div v-if="group.label" class="syntax-group-label">{{ group.label }}</div>
+                <div v-for="(row, rowIndex) in group.rows" :key="rowIndex" class="syntax-row" :class="{ stacked: row[0].length > 34 }">
+                  <code v-text="row[0]"></code><span>{{ row[1] }}</span>
+                </div>
+              </template>
+            </div>
+          </details>`
+      };
+
+      const StudioApp = {
+        setup() {
+          const selected = computed(selectedInfo);
+          const selectedCompute = computed(() => selected.value?.node.type === "folder" ? parseCompute(selected.value.node.name) : null);
+          const selectedPath = computed(() => selected.value ? nodePath(selected.value.node.id) : "Select an item from the structure");
+          const selectedFile = computed(() => findOutputFile(state.selectedOutputPath));
+          const errors = computed(outputErrors);
+          const inputItems = computed(inspectorItems);
+          const variableState = computed(variableTypeState);
+          const variableField = computed(() => ui.variable.originalKey ? findAnalyzedField(ui.variable.originalKey) : null);
+          const variableCanRemove = computed(() => Boolean(ui.variable.originalKey && Object.prototype.hasOwnProperty.call(state.config?.variables || {}, ui.variable.originalKey)));
+          const variableNameLocked = computed(() => Boolean(!ui.variable.isNew && variableField.value && !variableField.value.manual));
+          const variableDescription = computed(() => variableField.value?.reference?.includes(".") && !state.analysis?.globals.has(ui.variable.originalKey)
+            ? "These settings apply to this field in every repeated item."
+            : "Every use of this exact name shares one value.");
+          const createTitle = computed(() => ui.create.kind === "file" ? "Add file" : ui.create.kind === "folder" ? "Add folder" : "Add logic folder");
+          const sharePrimaryLabel = computed(() => ui.share.action === "open-code" ? "Open template" : "Copy link");
+          const emptyOutput = computed(() => ({
+            title: errors.value.length ? "Output needs values" : "No generated files",
+            text: errors.value.length ? "Complete the required fields to build the output tree." : "The current conditions produce no files."
+          }));
+
+          const chooseFile = () => document.getElementById("configFileInput")?.click();
+          const openAdd = (kind, event, placement = "sibling") => {
+            event?.currentTarget?.closest("details")?.removeAttribute("open");
+            openCreateDialog(kind, placement);
+          };
+          const onFileChange = event => readConfigurationFile(event.target.files?.[0], event.target);
+          const onDragOver = event => {
+            if (![...(event.dataTransfer?.types || [])].includes("Files")) return;
+            event.preventDefault();
+            ui.dragging = true;
+          };
+          const onDragLeave = event => {
+            if (!event.currentTarget.contains(event.relatedTarget)) ui.dragging = false;
+          };
+          const onDrop = event => {
+            event.preventDefault();
+            ui.dragging = false;
+            readConfigurationFile(event.dataTransfer?.files?.[0]);
+          };
+          const configNameChanged = event => {
+            state.config.name = event.target.value;
+            setDirty();
+          };
+          const instructionsChanged = event => {
+            state.config.instructions = event.target.value;
+            setDirty();
+          };
+          const indentEditor = event => {
+            const area = event.target;
+            const start = area.selectionStart;
+            area.setRangeText("  ", start, area.selectionEnd, "end");
+            updateFileContent(area.value);
+          };
+          const variableIcon = item => item.type === "collection" ? icons.braces : item.type === "boolean" ? icons.check : icons.rename;
+          const variableLabelPlaceholder = computed(() => variableField.value?.label || (ui.variable.name ? humanize(ui.variable.name) : "Display label"));
+          const closeCreate = () => closeDialog("createDialog");
+          const closeVariable = () => closeDialog("variableDialog");
+          const closeShare = () => closeDialog("shareDialog");
+
+          return {
+            state, ui, icons, selected, selectedCompute, selectedPath, selectedFile, errors, inputItems,
+            variableState, variableField, variableCanRemove, variableNameLocked, variableDescription,
+            variableLabelPlaceholder, createTitle, sharePrimaryLabel, emptyOutput,
+            chooseFile, openAdd, onFileChange, onDragOver, onDragLeave, onDrop,
+            configNameChanged, instructionsChanged, indentEditor, variableIcon,
+            closeCreate, closeVariable, closeShare,
+            setTheme, setMode, requestNewConfiguration, requestOpenConfiguration, saveConfiguration,
+            openShareDialog, openViewerShareDialog, openShareCodeDialog, resumeDraft,
+            selectedKind, folderExplanation, renameSelected, updateFileContent, moveSelected,
+            duplicateSelected, requestDeleteSelected, openVariableDialog, resetValues,
+            copyOutput, downloadOutput, renderCodePreview, fileLanguage,
+            createItemFromDialog, cancelConfirmation, confirmAction,
+            saveVariableDefinition, removeVariableDefinition, handleShareSubmit
+          };
+        },
+        template: `
+          <header class="topbar">
+            <div class="brand">
+              <div class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
+              </div>
+              <div class="brand-title">Boilerplater</div>
+            </div>
+            <div class="header-center">
+              <span v-if="state.config && state.mode === 'viewer'" class="badge">Read-only result</span>
+              <div v-else-if="state.config" class="segmented" aria-label="Application mode">
+                <button class="segment" :class="{ active: state.mode === 'fill' }" type="button" @click="setMode('fill')"><span class="desktop-only">Fill &amp; preview</span><span class="mobile-only">Fill</span></button>
+                <button class="segment" :class="{ active: state.mode === 'configure' }" type="button" @click="setMode('configure')"><span class="desktop-only">Configure</span><span class="mobile-only">Edit</span></button>
+              </div>
+            </div>
+            <div class="header-actions">
+              <template v-if="state.config">
+                <div class="config-title desktop-only" :title="state.config.name"><span v-if="state.dirty" class="dirty-dot"></span>{{ state.config.name }}</div>
+                <template v-if="state.mode !== 'viewer'">
+                  <button class="button ghost new-action" type="button" title="New blank configuration" @click="requestNewConfiguration"><span v-html="icons.plus"></span><span class="button-label">New</span></button>
+                  <button class="button ghost" type="button" title="Open another configuration" @click="requestOpenConfiguration"><span v-html="icons.upload"></span><span class="button-label">Open</span></button>
+                  <button class="button ghost" type="button" title="Share configuration" @click="openShareDialog"><span v-html="icons.link"></span><span class="button-label">Share</span></button>
+                  <button class="button primary" type="button" title="Save configuration (Ctrl or Command + S)" @click="saveConfiguration"><span v-html="icons.download"></span><span class="button-label">Save configuration</span></button>
+                </template>
+              </template>
+              <button class="icon-button" type="button" aria-label="Toggle color theme" title="Toggle color theme" @click="setTheme(ui.theme === 'dark' ? 'light' : 'dark')" v-html="ui.theme === 'dark' ? icons.sun : icons.moon"></button>
+            </div>
+          </header>
+
+          <main aria-label="Boilerplater">
+            <section v-if="!state.config" class="welcome" aria-labelledby="welcomeTitle">
+              <div class="welcome-shell">
+                <div class="welcome-heading">
+                  <h1 id="welcomeTitle">Open a template or<br>start a new one.</h1>
+                  <p>Template configurations turn folder and file patterns into a clean, fillable form.</p>
+                </div>
+                <section class="start-card" aria-label="Open or create a template">
+                  <button class="drop-zone" :class="{ dragging: ui.dragging }" type="button" @click="chooseFile"
+                    @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop">
+                    <span class="drop-icon" aria-hidden="true" v-html="icons.upload"></span>
+                    <strong>Drop a configuration file</strong>
+                    <span>or click to choose a JSON file</span>
+                  </button>
+                  <div class="or-row">or</div>
+                  <div class="start-actions">
+                    <button class="start-action" type="button" @click="requestNewConfiguration">
+                      <span class="start-action-icon" aria-hidden="true" v-html="icons.plus"></span>
+                      <span class="start-action-copy"><strong>Start with a blank template</strong><span>Create folders, files, and generation rules.</span></span>
+                      <span class="start-action-arrow" aria-hidden="true">→</span>
+                    </button>
+                    <button v-if="ui.resume" class="start-action" type="button" @click="resumeDraft">
+                      <span class="start-action-icon" aria-hidden="true" v-html="icons.file"></span>
+                      <span class="start-action-copy"><strong>Continue {{ ui.resume.title }}</strong><span>{{ ui.resume.description }}</span></span>
+                      <span class="start-action-arrow" aria-hidden="true">→</span>
+                    </button>
+                  </div>
+                  <button class="text-button" type="button" @click="openShareCodeDialog">Open a shared template code</button>
+                </section>
+              </div>
+            </section>
+
+            <section v-else class="workspace" :class="state.mode" aria-label="Template workspace">
+              <template v-if="state.mode === 'configure'">
+                <aside class="pane" aria-label="Template tree">
+                  <div class="pane-header">
+                    <div class="pane-heading"><div class="pane-title">Structure</div></div>
+                    <div class="pane-actions">
+                      <details class="add-menu">
+                        <summary class="button small"><span v-html="icons.plus"></span> Add</summary>
+                        <div class="menu-popover">
+                          <button class="menu-item" type="button" @click="openAdd('folder', $event)"><span v-html="icons.folder"></span><span>Folder</span></button>
+                          <button class="menu-item" type="button" @click="openAdd('file', $event)"><span v-html="icons.file"></span><span>File</span></button>
+                          <button class="menu-item" type="button" @click="openAdd('compute', $event)"><span v-html="icons.compute"></span><span>Logic folder</span></button>
+                        </div>
+                      </details>
+                    </div>
+                  </div>
+                  <div class="pane-body">
+                    <div v-if="state.config.tree.length" class="tree-wrap" role="tree" aria-label="Template structure">
+                      <config-tree-node v-for="node in state.config.tree" :key="node.id" :node="node"></config-tree-node>
+                    </div>
+                    <div v-else class="empty-state">
+                      <div class="empty-state-inner">
+                        <div class="empty-state-icon" v-html="icons.folder"></div>
+                        <strong>Add your first item</strong>
+                        <p>A template can begin with a folder, a file, or generation logic.</p>
+                        <div class="detail-actions">
+                          <button class="button small" type="button" @click="openAdd('folder', $event)"><span v-html="icons.folder"></span> Folder</button>
+                          <button class="button small" type="button" @click="openAdd('file', $event)"><span v-html="icons.file"></span> File</button>
+                          <button class="button small" type="button" @click="openAdd('compute', $event)"><span v-html="icons.compute"></span> Logic</button>
+                        </div>
+                      </div>
+                    </div>
+                    <template-guide always></template-guide>
+                  </div>
+                </aside>
+
+                <section class="pane" aria-label="Template editor">
+                  <div class="pane-header">
+                    <div class="pane-heading"><div class="pane-title">{{ selectedKind() }}</div><div class="pane-subtitle">{{ selectedPath }}</div></div>
+                    <div v-if="selected" class="pane-actions">
+                      <button class="icon-button" type="button" title="Move up" aria-label="Move up" @click="moveSelected(-1)" v-html="icons.arrowUp"></button>
+                      <button class="icon-button" type="button" title="Move down" aria-label="Move down" @click="moveSelected(1)" v-html="icons.arrowDown"></button>
+                      <button class="icon-button" type="button" title="Duplicate" aria-label="Duplicate" @click="duplicateSelected" v-html="icons.copy"></button>
+                      <button class="icon-button" type="button" title="Delete" aria-label="Delete" @click="requestDeleteSelected" v-html="icons.trash"></button>
+                    </div>
+                  </div>
+                  <div class="pane-body">
+                    <div v-if="!selected" class="empty-state"><div class="empty-state-inner"><div class="empty-state-icon" v-html="icons.file"></div><strong>Nothing selected</strong><p>Choose an item from the structure to edit it.</p></div></div>
+                    <div v-else-if="selected.node.type === 'file'" class="editor-shell">
+                      <div class="file-properties"><div class="field"><label for="nodeNameInput">File name</label><input class="input" id="nodeNameInput" :value="selected.node.name" spellcheck="false" @input="renameSelected($event.target.value)"></div></div>
+                      <div class="editor-toolbar"><span class="editor-path">Content</span><span class="badge blue" v-text="'{{ value }}'"></span></div>
+                      <textarea class="code-editor" :value="selected.node.content" spellcheck="false" aria-label="Template file content"
+                        @input="updateFileContent($event.target.value)" @keydown.tab.prevent="indentEditor"></textarea>
+                    </div>
+                    <div v-else class="detail-view">
+                      <div class="field">
+                        <label for="nodeNameInput">{{ selectedCompute ? "Logic expression" : "Folder name" }}</label>
+                        <input class="input" id="nodeNameInput" :value="selected.node.name" spellcheck="false" @input="renameSelected($event.target.value)">
+                      </div>
+                      <div class="detail-card">
+                        <h3>{{ selectedCompute ? "Generation behavior" : "Generated folder" }}</h3>
+                        <p>{{ folderExplanation(selectedCompute) }}</p>
+                        <div class="detail-actions">
+                          <button class="button small" type="button" @click="openAdd('folder', $event, 'child')"><span v-html="icons.folder"></span> Add child folder</button>
+                          <button class="button small" type="button" @click="openAdd('file', $event, 'child')"><span v-html="icons.file"></span> Add child file</button>
+                          <button class="button small" type="button" @click="openAdd('compute', $event, 'child')"><span v-html="icons.compute"></span> Add child logic</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <aside class="pane" aria-label="Configuration inspector">
+                  <div class="pane-header"><div class="pane-heading"><div class="pane-title">Template details</div></div></div>
+                  <div class="pane-body">
+                    <section class="side-section">
+                      <div class="field"><label for="configNameInput">Template name</label><input class="input" id="configNameInput" :value="state.config.name" @input="configNameChanged"></div>
+                      <div class="field"><label for="configInstructionsInput">Template guide <span class="optional-label">Markdown</span></label>
+                        <textarea class="textarea-small" id="configInstructionsInput" :value="state.config.instructions" placeholder="Explain what this template creates and how to complete it." @input="instructionsChanged"></textarea>
+                        <div class="dialog-note">Shown beneath the left panel for people filling the template.</div>
+                      </div>
+                    </section>
+                    <section class="side-section">
+                      <div class="section-heading"><h3>Generated form</h3><button class="button small" type="button" @click="openVariableDialog()"><span v-html="icons.plus"></span> Variable</button></div>
+                      <div v-if="inputItems.length" class="input-list">
+                        <template v-for="item in inputItems" :key="item.name">
+                          <button v-if="item.editable" class="input-item" :class="{ invalid: item.invalid }" :style="item.nested ? 'margin-left:12px;width:calc(100% - 12px)' : ''" type="button" @click="openVariableDialog(item.key)">
+                            <span class="input-item-icon" v-html="variableIcon(item)"></span>
+                            <span class="input-item-main"><span class="input-item-name">{{ item.name }}</span><span class="input-item-type">{{ item.meta }}</span></span>
+                            <span class="badge" :class="{ 'danger-badge': item.invalid }">{{ item.type }}</span>
+                          </button>
+                          <div v-else class="input-item">
+                            <span class="input-item-icon" v-html="variableIcon(item)"></span>
+                            <span class="input-item-main"><span class="input-item-name">{{ item.name }}</span><span class="input-item-type">{{ item.meta }}</span></span>
+                            <span class="badge">{{ item.type }}</span>
+                          </div>
+                        </template>
+                      </div>
+                      <div v-else class="diagnostic" v-text="'No fields yet. Use [[name]] in a path or {{name}} in file content.'"></div>
+                    </section>
+                    <section v-if="state.analysis.diagnostics.length" class="side-section">
+                      <div class="section-heading"><h3>Diagnostics</h3><span class="badge">{{ state.analysis.diagnostics.length }}</span></div>
+                      <div class="diagnostic-list"><diagnostic-item v-for="(item, index) in state.analysis.diagnostics" :key="index" :item="item"></diagnostic-item></div>
+                    </section>
+                    <syntax-help></syntax-help>
+                  </div>
+                  <div class="pane-footer"><button class="button primary small wide" type="button" @click="setMode('fill')">Preview form</button></div>
+                </aside>
+              </template>
+
+              <template v-else>
+                <aside class="pane" :aria-label="state.mode === 'viewer' ? 'Locked completed form' : 'Template form'">
+                  <div class="pane-header">
+                    <div class="pane-heading"><div class="pane-title">{{ state.config.name }}</div><div v-if="state.mode === 'viewer'" class="pane-subtitle">Completed values</div></div>
+                    <span v-if="state.mode === 'viewer'" class="badge">Locked</span>
+                    <button v-else class="button ghost small" type="button" @click="resetValues">Reset</button>
+                  </div>
+                  <div class="pane-body form-pane-body">
+                    <generated-form :read-only="state.mode === 'viewer'"></generated-form>
+                    <variable-docs></variable-docs>
+                    <template-guide></template-guide>
+                    <section v-if="state.mode !== 'viewer'" class="form-share-action" aria-label="Share completed result">
+                      <button class="button primary wide" type="button" :disabled="errors.length" @click="openViewerShareDialog"><span v-html="icons.link"></span> Create locked end-user link</button>
+                      <p>{{ errors.length ? "Resolve the form errors before sharing this completed result." : "Includes the current values and opens a read-only form, generated file tree, and file preview." }}</p>
+                    </section>
+                  </div>
+                </aside>
+
+                <section class="pane" aria-label="Generated file explorer">
+                  <div class="pane-header">
+                    <div class="pane-heading"><div class="pane-title">Files</div></div>
+                    <div class="pane-actions"><span class="badge">{{ state.rendered.fileCount }}</span><span v-if="errors.length" class="badge danger-badge">{{ errors.length }} {{ errors.length === 1 ? "issue" : "issues" }}</span></div>
+                  </div>
+                  <div class="pane-body">
+                    <template v-if="state.rendered.tree.length">
+                      <div v-if="errors.length" class="output-issues"><diagnostic-item v-for="(item, index) in errors.slice(0, 3)" :key="index" :item="item"></diagnostic-item></div>
+                      <div class="tree-wrap" role="tree" aria-label="Generated files"><output-tree-node v-for="node in state.rendered.tree" :key="node.path" :node="node"></output-tree-node></div>
+                    </template>
+                    <div v-else class="empty-state">
+                      <div class="empty-state-inner">
+                        <div class="empty-state-icon" v-html="errors.length ? icons.alert : icons.folder"></div>
+                        <strong>{{ emptyOutput.title }}</strong><p>{{ emptyOutput.text }}</p>
+                        <div v-if="errors.length" class="diagnostic-list"><diagnostic-item v-for="(item, index) in errors.slice(0, 3)" :key="index" :item="item"></diagnostic-item></div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="pane" aria-label="Rendered file content">
+                  <div class="pane-header">
+                    <div class="pane-heading"><div class="pane-title">{{ selectedFile ? selectedFile.name : "File preview" }}</div><div class="pane-subtitle">{{ selectedFile ? selectedFile.path : "Select a generated file" }}</div></div>
+                    <div v-if="selectedFile" class="pane-actions">
+                      <button class="button ghost small" type="button" @click="copyOutput"><span v-html="icons.copy"></span><span class="button-label">Copy</span></button>
+                      <button class="button small" type="button" @click="downloadOutput"><span v-html="icons.download"></span><span class="button-label">Download file</span></button>
+                    </div>
+                  </div>
+                  <div class="pane-body">
+                    <div v-if="selectedFile" v-html="renderCodePreview(selectedFile.content, selectedFile.name)"></div>
+                    <div v-else class="empty-state"><div class="empty-state-inner"><div class="empty-state-icon" v-html="icons.file"></div><strong>No file selected</strong><p>Choose a file from the generated tree to inspect its content.</p></div></div>
+                  </div>
+                  <div class="pane-footer"><span>{{ selectedFile ? selectedFile.content.split("\\n").length + " lines · " + selectedFile.content.length + " characters" : "" }}</span><span>{{ selectedFile ? fileLanguage(selectedFile.name) : "" }}</span></div>
+                </section>
+              </template>
+            </section>
+          </main>
+
+          <input class="sr-only" id="configFileInput" type="file" accept=".json,.template.json,application/json" @change="onFileChange">
+
+          <dialog id="createDialog" :aria-labelledby="'createDialogTitle'" @cancel="closeCreate">
+            <form method="dialog" @submit.prevent="createItemFromDialog">
+              <div class="dialog-header"><h2 id="createDialogTitle">{{ createTitle }}</h2><p>Inside {{ ui.create.parentLabel }}</p></div>
+              <div class="dialog-body">
+                <template v-if="ui.create.kind === 'compute'">
+                  <div class="field"><label for="computeType">Behavior</label><select class="select" id="computeType" v-model="ui.create.computeType">
+                    <option value="group">Group without an output folder</option><option value="for">Repeat for a collection</option><option value="when">Include when checked</option><option value="when-not">Include when unchecked</option>
+                  </select></div>
+                  <template v-if="ui.create.computeType === 'for'">
+                    <div class="field"><label for="computeCollection">Collection name</label><input class="input" id="computeCollection" v-model="ui.create.collection" required spellcheck="false"></div>
+                    <div class="field"><label for="computeBinding">Loop binding</label><input class="input" id="computeBinding" v-model="ui.create.binding" required spellcheck="false"><div class="dialog-note">Use item for one direct value, or (name, variant) to expose multiple values.</div></div>
+                  </template>
+                  <div v-else-if="ui.create.computeType === 'when' || ui.create.computeType === 'when-not'" class="field">
+                    <label for="computeReference">Condition</label><input class="input" id="computeReference" v-model="ui.create.reference" required spellcheck="false"><div class="dialog-note">Use enabled for a checkbox, or mode=advanced for an inferred choice.</div>
+                  </div>
+                  <div v-else class="field"><label for="computeLabel">Group label</label><input class="input" id="computeLabel" v-model="ui.create.label" required spellcheck="false"></div>
+                </template>
+                <template v-else>
+                  <div class="field"><label for="createName">{{ ui.create.kind === "file" ? "File name" : "Folder name" }}</label><input class="input" id="createName" v-model="ui.create.name" autocomplete="off" spellcheck="false" required></div>
+                  <div v-if="ui.create.kind === 'file'" class="field"><label for="createContent">Initial content <span class="optional-label">Optional</span></label><textarea class="textarea-small" id="createContent" v-model="ui.create.content" @keydown.ctrl.enter.prevent="createItemFromDialog" @keydown.meta.enter.prevent="createItemFromDialog"></textarea></div>
+                </template>
+              </div>
+              <div class="dialog-footer"><button class="button" type="button" @click="closeCreate">Cancel</button><button class="button primary" type="submit">Create</button></div>
+            </form>
+          </dialog>
+
+          <dialog id="confirmDialog" aria-labelledby="confirmDialogTitle" @cancel.prevent="cancelConfirmation">
+            <form method="dialog" @submit.prevent="confirmAction">
+              <div class="dialog-header"><h2 id="confirmDialogTitle">{{ ui.confirm.title }}</h2><p>{{ ui.confirm.description }}</p></div>
+              <div class="dialog-footer"><button class="button" type="button" @click="cancelConfirmation">Cancel</button><button class="button primary" :class="{ danger: ui.confirm.danger }" type="submit">{{ ui.confirm.label }}</button></div>
+            </form>
+          </dialog>
+
+          <dialog class="wide-dialog" id="variableDialog" aria-labelledby="variableDialogTitle" @cancel="closeVariable">
+            <form method="dialog" @submit.prevent="saveVariableDefinition">
+              <div class="dialog-header"><h2 id="variableDialogTitle">{{ ui.variable.isNew ? "Add variable" : "Variable settings" }}</h2><p>{{ variableDescription }}</p></div>
+              <div class="dialog-body scrollable">
+                <div class="field"><label for="variableName">Variable name</label><input class="input" id="variableName" v-model="ui.variable.name" required pattern="[A-Za-z_][A-Za-z0-9_.-]*" spellcheck="false" :readonly="variableNameLocked"></div>
+                <div class="variable-basic-grid">
+                  <label class="variable-label-label" for="variableLabel">Form label <span class="optional-label">Optional</span></label>
+                  <label class="variable-type-label" for="variableType">Input type</label>
+                  <input class="input variable-label-control" id="variableLabel" v-model="ui.variable.label" :placeholder="variableLabelPlaceholder">
+                  <select class="select variable-type-control" :class="{ invalid: variableState.setting.invalid }" id="variableType" v-model="ui.variable.type" :aria-invalid="variableState.setting.invalid">
+                    <option value="auto">Auto (recommended)</option><option value="boolean">Boolean</option><option value="choice">Choice</option><option value="text">Text</option>
+                  </select>
+                  <div v-if="variableState.message" class="variable-type-status field-error">{{ variableState.message }}</div>
+                </div>
+                <div v-if="variableState.setting.type === 'boolean'" class="field"><label for="variableDefault">Initial state</label><select class="select" id="variableDefault" v-model="ui.variable.default"><option :value="false">Unchecked</option><option :value="true">Checked</option></select></div>
+                <template v-else-if="variableState.setting.type === 'choice'">
+                  <div class="field"><label>Detected choices</label><div class="dialog-note"><span v-for="option in variableState.setting.options || []" :key="option" class="badge">{{ option }}</span></div></div>
+                  <div class="field"><label for="variableDefault">Initial choice</label><select class="select" id="variableDefault" v-model="ui.variable.default"><option value="">First detected choice</option><option v-for="option in variableState.setting.options || []" :key="option" :value="option">{{ option }}</option></select></div>
+                </template>
+                <div v-else class="field"><label for="variableDefault">Default value <span class="optional-label">Optional</span></label><input class="input" id="variableDefault" v-model="ui.variable.default" type="text"></div>
+                <div class="field variable-docs-setting"><label for="variableDocs">Form documentation <span class="optional-label">Markdown</span></label><textarea class="textarea-small" id="variableDocs" v-model="ui.variable.docs" @keydown.ctrl.enter.prevent="saveVariableDefinition" @keydown.meta.enter.prevent="saveVariableDefinition"></textarea><div class="dialog-note">Shown beneath the generated form.</div></div>
+                <details class="advanced-disclosure" :open="ui.variable.advanced" @toggle="ui.variable.advanced = $event.target.open">
+                  <summary>Validation and automation</summary>
+                  <div class="advanced-body">
+                    <div class="field"><label for="variableDescription">Description <span class="optional-label">Optional</span></label><input class="input" id="variableDescription" v-model="ui.variable.description"></div>
+                    <div class="field"><div class="checkbox-row"><input id="variableRequired" v-model="ui.variable.required" type="checkbox"><label for="variableRequired">Required</label></div></div>
+                    <div class="field"><label for="variablePattern">Validation pattern <span class="optional-label">Regular expression</span></label><input class="input" id="variablePattern" v-model="ui.variable.pattern"></div>
+                    <div class="field"><label for="variablePatternMessage">Validation message <span class="optional-label">Optional</span></label><input class="input" id="variablePatternMessage" v-model="ui.variable.patternMessage"></div>
+                    <div class="field"><label for="variableDerive">Derived value template <span class="optional-label">Optional</span></label><textarea class="textarea-small" id="variableDerive" v-model="ui.variable.derive" :placeholder="'{{first}}-{{second}}'" @keydown.ctrl.enter.prevent="saveVariableDefinition" @keydown.meta.enter.prevent="saveVariableDefinition"></textarea><div class="dialog-note">When set, this field updates from other variables and cannot be edited.</div></div>
+                  </div>
+                </details>
+              </div>
+              <div class="dialog-footer">
+                <button v-if="variableCanRemove" class="button danger" type="button" @click="removeVariableDefinition">{{ state.config.variables[ui.variable.originalKey]?.manual ? "Remove variable" : "Reset settings" }}</button>
+                <span class="dialog-spacer"></span>
+                <button class="button" type="button" @click="closeVariable">Cancel</button>
+                <button class="button primary" type="submit">Save variable</button>
+              </div>
+            </form>
+          </dialog>
+
+          <dialog class="wide-dialog" id="shareDialog" aria-labelledby="shareDialogTitle" @cancel="closeShare">
+            <form method="dialog" @submit.prevent="handleShareSubmit()">
+              <div class="dialog-header"><h2 id="shareDialogTitle">{{ ui.share.title }}</h2><p>{{ ui.share.description }}</p></div>
+              <div class="dialog-body">
+                <div class="field"><label for="shareValue">{{ ui.share.label }}</label><textarea class="textarea-small share-value" id="shareValue" v-model="ui.share.value" :readonly="ui.share.readOnly" spellcheck="false" @keydown.enter.exact.prevent="handleShareSubmit()"></textarea></div>
+                <div class="dialog-note">{{ ui.share.note }}</div>
+              </div>
+              <div class="dialog-footer">
+                <button class="button" type="button" @click="closeShare">Cancel</button>
+                <button v-if="ui.share.secondary" class="button" type="button" @click="handleShareSubmit('copy-code')">Copy code</button>
+                <button class="button primary" type="submit">{{ sharePrimaryLabel }}</button>
+              </div>
+            </form>
+          </dialog>
+
+          <div class="toast-region" aria-live="polite" aria-atomic="true">
+            <div v-for="item in ui.toasts" :key="item.id" class="toast" :class="item.type"><span v-html="item.type === 'error' ? icons.alert : icons.check"></span><span>{{ item.message }}</span></div>
+          </div>
+        `
+      };
+
+      const app = createApp(StudioApp);
+      app.component("file-icon", FileIcon);
+      app.component("diagnostic-item", DiagnosticItem);
+      app.component("config-tree-node", ConfigTreeNode);
+      app.component("output-tree-node", OutputTreeNode);
+      app.component("field-control", FieldControl);
+      app.component("generated-form", GeneratedForm);
+      app.component("template-guide", TemplateGuide);
+      app.component("variable-docs", VariableDocs);
+      app.component("syntax-help", SyntaxHelp);
+      app.mount("#app");
+
+      window.addEventListener("keydown", event => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+          event.preventDefault();
+          if (state.config && state.mode !== "viewer") saveConfiguration();
+        }
+      });
+      window.addEventListener("beforeunload", event => {
+        if (!state.dirty) return;
+        event.preventDefault();
+        event.returnValue = "";
+      });
+
+      async function initializeApp() {
+        initializeTheme();
+        updateResume();
+        if (!location.hash.includes("template=") && !location.hash.includes("view=")) return;
+        try {
+          const decoded = await decodeShareCode(location.hash);
+          loadConfiguration(decoded.config, decoded.mode, decoded.values);
+          toast(decoded.mode === "viewer" ? "Completed result opened." : "Shared template opened.", "success");
+        } catch (error) {
+          toast(error.message || "Could not open the shared template.", "error");
+        }
+      }
+
+      initializeApp();
+
+      window.Boilerplater = {
+        load: config => loadConfiguration(config, "fill"),
+        createBlank: () => loadConfiguration(blankConfig(), "configure"),
+        getConfiguration: () => deepClone(state.config),
+        getRenderedFiles: () => flattenOutputFiles(state.rendered?.tree || []).map(file => ({ path: file.path, content: file.content })),
+        createShareCode: () => encodeShareCode(state.config),
+        createViewerShareCode: () => encodeShareCode({ shareVersion: 1, view: "viewer", configuration: state.config, values: snapshotFormValues() }),
+        openShareCode: async code => {
+          const decoded = await decodeShareCode(code);
+          loadConfiguration(decoded.config, decoded.mode, decoded.values);
+        },
+        version: 4
+      };
+    })();
+  </script>
+</body>
+</html>

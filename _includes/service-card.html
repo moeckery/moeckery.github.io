@@ -1,14 +1,25 @@
 {%- comment -%}
 One entry in the services grid.
-  include.service — a document from the _services collection.
+  include.service — an entry from the _services collection.
+
+A service with no `link` yet isn't reachable, so its card renders as plain
+text rather than a dead link.
 {%- endcomment -%}
-<li class="card">
-  <a class="card__link" href="{{ include.service.url | relative_url }}">
+<li class="card{% unless include.service.link %} card--inert{% endunless %}">
+  {%- if include.service.link -%}
+  <a class="card__link" href="{{ include.service.link | relative_url }}">
+  {%- else -%}
+  <div class="card__link">
+  {%- endif -%}
     <span class="card__head">
       <span class="card__name">{{ include.service.title }}</span>
       {% include status.html status=include.service.status %}
     </span>
-    <span class="card__domain">{{ include.service.domain }}</span>
+    {% if include.service.domain %}<span class="card__domain">{{ include.service.domain }}</span>{% endif %}
     <span class="card__tagline">{{ include.service.tagline }}</span>
+  {%- if include.service.link -%}
   </a>
+  {%- else -%}
+  </div>
+  {%- endif -%}
 </li>
