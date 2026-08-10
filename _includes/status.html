@@ -1,0 +1,9 @@
+{%- comment -%}
+Renders the status pill for a service.
+  include.status — a status id, matched against `statuses` in _config.yml.
+An id with no matching entry falls through to the raw value rather than
+rendering nothing, so a typo is visible instead of silent.
+{%- endcomment -%}
+{%- assign match = site.statuses | where: "id", include.status | first -%}
+<span class="status status--{{ include.status }}">
+  <span class="status__dot" aria-hidden="true"></span>{% if match %}{{ match.label }}{% else %}{{ include.status }}{% endif %}</span>

@@ -1,0 +1,14 @@
+{%- comment -%}
+One entry in the services grid.
+  include.service — a document from the _services collection.
+{%- endcomment -%}
+<li class="card">
+  <a class="card__link" href="{{ include.service.url | relative_url }}">
+    <span class="card__head">
+      <span class="card__name">{{ include.service.title }}</span>
+      {% include status.html status=include.service.status %}
+    </span>
+    <span class="card__domain">{{ include.service.domain }}</span>
+    <span class="card__tagline">{{ include.service.tagline }}</span>
+  </a>
+</li>

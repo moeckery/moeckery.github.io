@@ -1,0 +1,52 @@
+title: moeckery
+tagline: Small services, built and run in the open.
+description: >-
+  A hub for the services run under the moeckery name — what each one does,
+  where it lives, and whether it's ready to use yet.
+author: moeckery
+url: https://moeckery.github.io
+baseurl: ""
+
+# Where the source of truth for each service lives. Adding a service means
+# adding one file to _services/ — nothing here needs to change.
+collections:
+  services:
+    output: true
+    permalink: /services/:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: services
+    values:
+      layout: service
+
+# Ordered list of the status values a service may declare. The order here is
+# the order services are sorted in on the index; `label` is what a visitor sees.
+statuses:
+  - id: live
+    label: Live
+    blurb: Up and running.
+  - id: beta
+    label: Beta
+    blurb: Usable, still moving.
+  - id: soon
+    label: Coming soon
+    blurb: Announced, not open yet.
+  - id: retired
+    label: Retired
+    blurb: No longer running.
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+sass:
+  style: compressed
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor
+  - .github
