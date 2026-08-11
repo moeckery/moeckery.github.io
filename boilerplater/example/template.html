@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Redirecting…</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #fafafa;
+      --foreground: #18181b;
+      --card: #ffffff;
+      --muted: #f4f4f5;
+      --muted-foreground: #71717a;
+      --border: #e4e4e7;
+      --primary: #18181b;
+      --primary-foreground: #fafafa;
+      --ring: #a1a1aa;
+      --danger: #dc2626;
+      --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 18px 48px rgb(0 0 0 / 0.08);
+      --redirect-duration: 900ms;
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --background: #09090b;
+      --foreground: #fafafa;
+      --card: #111113;
+      --muted: #202023;
+      --muted-foreground: #a1a1aa;
+      --border: #2e2e32;
+      --primary: #fafafa;
+      --primary-foreground: #18181b;
+      --ring: #71717a;
+      --danger: #f87171;
+      --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 22px 60px rgb(0 0 0 / 0.3);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 12%, color-mix(in srgb, var(--foreground) 4%, transparent), transparent 34%),
+        var(--background);
+      color: var(--foreground);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      color: var(--foreground);
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+      cursor: pointer;
+    }
+
+    .theme-toggle:hover { background: var(--muted); }
+    .theme-toggle svg { width: 16px; height: 16px; }
+
+    .theme-toggle:focus-visible,
+    .button:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    .card {
+      width: min(420px, 100%);
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 18px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--muted);
+    }
+
+    .icon svg { width: 19px; height: 19px; }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--muted-foreground);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+    }
+
+    .destination {
+      min-height: 20px;
+      margin: 8px 0 0;
+      color: var(--muted-foreground);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .progress {
+      height: 4px;
+      margin: 22px 0 16px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--muted);
+    }
+
+    .progress-bar {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+      transform-origin: left;
+      animation: redirect-progress var(--redirect-duration) linear both;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--primary);
+      border-radius: 9px;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font-size: 12px;
+      font-weight: 620;
+      text-decoration: none;
+    }
+
+    .button:hover { opacity: 0.9; }
+    .button svg { width: 15px; height: 15px; }
+
+    .card.error .icon { color: var(--danger); }
+    .card.error .eyebrow { color: var(--danger); }
+    .card.error .progress, .card.error .button { display: none; }
+
+    @keyframes redirect-progress {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 16px; }
+      .card { padding: 21px; }
+      .theme-toggle { top: 12px; right: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .progress-bar { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: system" title="Theme: system"></button>
+
+  <main class="card" id="card">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M5 12h14M14 7l5 5-5 5"/>
+      </svg>
+    </div>
+    <p class="eyebrow" id="eyebrow">Redirecting</p>
+    <h1 id="title">Taking you there…</h1>
+    <p class="destination" id="destination" role="status" aria-live="polite">Preparing your destination</p>
+    <div class="progress" aria-hidden="true"><span class="progress-bar"></span></div>
+    <a class="button" id="continueLink" href="#">
+      Continue now
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M5 12h14M14 7l5 5-5 5"/>
+      </svg>
+    </a>
+  </main>
+
+  <script>
+    // Change this one value to your destination.
+    const REDIRECT_URL = "https://moeckery.github.io/boilerplater/?r=2a780c55#template=g.H4sIAAAAAAAAA81aW3PctpL-K6g5eUi80zO8gBdMlWrXR1IUb2xJJTtnN-XxqnBpUoxIgIfkyJ5M6b9vgeTcpKEk5zjZ1YOGBBqN7sbXjUaDq1FiqoI3_8CqzowezdzxSPMCR7PRL7rJmhwVabAoc97gaDzKdN1UC9lkRtej2ejDTVZvuomskDdYE04anuWmQkXOji9JkcnK1FjdZRJrUmFp6qwx1ZIklSkIJ3lWN8QkRJqiNBp1U0_meq5PubzZthHJNcm0whK1Qt3kS7KokZwbhZPf6jG5XDY3Ro-JqciZIVwrorDMzZI0hpz9fDomx7lZKHK16Gi6tx8XulOlnfDDDZIUNVa8QbUrZ6ZlvlBWsbLMM8ntEFJLniQmV5lOx0Qa3fBMY2WfkixdVC3Reta_L7JckabK0hSrekyO30yPTx6S_rwQWGm0Biy4zhKsm3rcatIxOen0qbA2i8pa8vMNVriWSeTYKnFZmd9QNuTNST0mvdEJl9IstGXXGaWwBi2zEvNMYz0mDa9StN0VptYc3bTrmYjFQ00Sk-fmM3ktC7Si36FuTUf4ojEFbzLJ83w5GY1Hd7zKrDz1aLYalZ089jHnAvPRbNSLOBqPFNayysqmBd66ndQ3pmoIl5XRy8IuVovH8ajCfy6yCtVo1lQLHI9K3jRY2ZH_85HD75_sPwfYp1ff__sM1i__9sOr70Yb2ndY1zxtwV0jyc1nrCS3T2i761ZtvSiEfa6x5B0UxJLUmU5zJDfL8gZ1PRndj0c7cN087qp53km9r6NttFjv1sFaaQvx_9cqdhDZ1e9kC6UPXedDZd9jbteTt1GgWugmO7CO-9PkXKeLVvzVYWY9G7IhfMTvfjxqKsTR7ONqlKnRbMQ4xq4rHJBOGAIVzAHuBQpC6YWBSFTk-tFoPGqWpbWa9WmsRpsoOJHW-4T14NF4JG-yXFWot9xjySPuRxRimvhAFUOIERmEno8elY4nfLHDPctxy3sdESZLXuSWu9FNi6JNz2yuV6u_JaYi32-sNN4ov_bcH0imd8Ln_f1cEwKt38zIfLRa9V54fw-r1Ybu_h4Knun5yFIT0tPYAVwWCLujysqoNV0Xtn7McrzkzU3Hf8tzujVXq9V6FNp48WFZ4oyUi_qma-wDqzrLmitM6hn5OB9VmNTTG-SqnnbSfdqntRN3lKuVVfD-fvrq1Yaqj3ivu4BnheuVqKcHlZruD6h3xN-l_Y-DgycZLyZpz6GPsTYWWJ1Xq2liqvv70f2n-_EaKnGgmM8YoCcVUMpC4DxQoDAMAxZg6AV8GIjfP0RBt_ZbNDxAwQ8H4SqjKOAqUOB4YQQ0cASwJAwh5lSFQUATIcSwDB8_bvh_-nSQfxKHScicGDxKEagfCmDMDyH0qeM4CmkS0id0_HyDulfsKL3FAR3ckMe-4KAwYkAFCuAhj0HxIIxDGdGAPuHQt3F9kKsrQh5RRwHHEIG6EQMWSwfiKPIVV14YSDbkyNtt9bEr8zLrk6uZ3azr6Z0717eZVjOyDaFzXWDDFW_4zAK589w9X7XNbeitZx3UeVlObjc5wyQz04Oj6hJlO6LCNlGoZ8Szr3UbT03Vcyt4I2_e7vJ_8QxkkwGuee2qYv_yfb5fwZmQjfyP3ft8aAzZJmS7s8KQXdd_WcHTp_pLUzW7DHeZ3jRNud-zI8WlqZoZiZ3Y2SWpkCubgNWXlRH4gK_ld4bN7CHPsg26NkLmzc2jznaex6JkOmsynp9gzpfvURqt6hkJdmny7A7_70Rxg3279CnugxntRm-z4keCyHIxI67jFA87CixMtZwR14vfZfudeVZkQ6zmI3e9bz3mFbjeu2y0CeqYSOnFPoNQOh5QGbnAlB9DTJkKuCvQcZOhsNHD-emYsQ0X7zvyvyBWNO1GfZwv6garN5cH4sWLPXjXZw75Stm7xvq9C_6XG_RsLe0HSRQxwYCFNtOSbghxqFygLveiOI48EeKQpW9K_kxkXjSmljzPdDq989YW_8lU2e_WifNLo173JFi9ZAU2tmyHdBnyFSYb8x3YFGzH443Btg7Ytsj01X5UL_iXbYvbGrXApsrkdgm6tb3qfWxt9rXP7ThEN6ksF9umbnH2nKZj90uT5dnv7Ul2t5PfYcVT3OmdkcjZLinnzPEDmgB6iQM0FBEwL3EhEp4TR6EvWRA94zywTry-zon6LeRlvsS1Nk0r_tqMbeZ3ixb3qSzhgSxPJt1fm0vaDHKbQzIqQ-HTCGTiOkApdUB4KgZOI08FsXTjMH4iv0orsygJfuFFmeNAisgxYuhwAQmzi8KcEETsSeBMBmFMXeGGg4nQJM2aLNWmwr2l2HFiKsKEJQkEYZQARRFC7LoucK4YRg5z5FOHsS4_XCe8R9oo_G1AC8pFImnCgEY0BBrYRJSHLkQYMC_wQsVc-cJENOnLRAMTSc-nkZQQJCwAyigHJoIYhBepmPpuqKgcMpctaH2Z_FY_MNZ2uSPBVCKlCyiQAU2UAuFwF1zkEaXIFCbec1po07xMEx99z3ETBBYzAVRyCkwFDvhJELs-414inEFvrOR0QJu1Ll7kOo5KEvAxioEmHgcWUAEO9XyXcYe6oRpiX3J5y1Nb6jP6kbF2vAP9UMWJB64Qvo0nEmKJAoQTOTyKIyVZ-GJ0lW1J8bCpQifyZEApKEE5UCkcYIkMQEhPeir241i63wRdbsBCxlQADrcwjnwXWBB54CZxwiIvpsgGNz17fp6Uy0FwJSKkSagERJxaR2cSOJXKvjImeZBw91lrvRhcUlEeIuUQ2hSJ0ogDF34AknrIObreE6tvwXVYmfHmWCtC4SQeJEpFQDGMQISRC7HrSMfzvCCh3hD3vn5UdHWuL80T-IqiJGReEIHDPbSRJQIhGYcg8FxJqccFPhtUNvhKzUD8Dbh0KeUgfHuERuUAi4QLynEdpCLmUrBvhC1fRkomwGNHAY2kgtjlAiJXJJ6KfEnZYORac56kZhBfDg_jIOIx0MDzgUYogHmcguPRWDCPSxk8tVd9bfAKVeAEAcRtYQNDB7ikCThRELoJQy9OgiFlZNEVgrDqYPZIp02-4jiRG4ccQjdJgDpBBCxwfFBSsAAT6ovYH5okNZPCqAPg2nHIJIkFd2PwBLMGU3ZzVDEIn4XKj4Xy1LNR5cUGoyFlCfUZ-BE6FmYCYptOeF6MSRgw4YaD0f7EyFus-ratPqvV37Lk4fZsU6gfry7eEfs68yjwvMw02suK_7q4-vnkzRWZ8rK078cXl7-SPtS_amM9mUzn-uqXc6LLgsiMAJgia44U3m3o60qSybSupG355f3pVTtRe4N0_g9yeXH14ag7eJ_-9-XF-9P-FD7Xx-9ObBWxJR6NyXxvC2sLiqvVNEus-G0RdlezbmvYaNa9zvyJ60OdZ8Wgbg9DDZl02pVZSezVGs9zAqANSC5vEFRWEagejTqsuuWzqLHiShGAelk3WJB28tYovRgvskm60Jk0le7sAiAyrY5mLdHaUhPrKDPL9GlLpWZjpdTY1pk78YIeA-T1e9LWWvcM1uvTatg5jf2pF8UGDKkhtlWZzzo3XG2oJ2t7Hp9dXJ-ev_7729OTI4ecXVy8P8ozvfhiR7YTEjBkXfslk-k2AFhenbSystm9yuqmMjnW9bS2RwAJCkXGtevNtNGVMdvVALAXmkcd_w3z9cPzxj89_3D16-XFm_MPdg0243bsuw1ELKROYLc64UkJlAc-xGHCIJKOCNFhnhcPhu6Jar33QJpus_e53ubwc_2wmq-3nj_XV6evT96dTop2ASao77r_k1dz_WqSm9Q2W_e6Loxa5FjP9fV1uWyhfX1tacrlR2nUp7nd2Busm-u2b64ndy2zuRaZnmu7BHPd40Sa7khpe-2QuvuZ61fX9neSGttja7xbW8Uo0V7JiNiWi127DVmDCXQTl0cJRnQ4rb3tbnmfPl2uqaZ3VGDDo_VZ87i9KrECHTxlDhwQt17Ux_F2EapFG282V8NdTZd__pUX-eZsv1tQsmy6unTbvWYyI6v7Aw67rbk_P8ttXE9fHZrDFoRkk-9NsbMOTPoO-gEkvnDsTZkLPIoUSB4xSUMnpP5gBthK38309FL0NC39JDUmzdEeo_eK7rbWWS0v-_vvP7I8NVYZz9ccujJPw1PcqbK09nyjnmDU3arpuQaAuf46Jbp60teKvpmx31Fel2Vl7ng-I_bm9EncWeS0ZUUj-zrOMxdra8J6uqhBom4qnrvPAi-9xR6tbenxj80y7UfX00d3mFtU7qSpwlWe6_ngJzQBKtwEhCci8KMw8hCF47JnSxIPLDZwaBQuQ18KCANfAPWZrRT4EkLhJZ4TuVQmg9nji0rFLZFOJ7eaN9kdThTeTQ-Uj78W7w-KyQXXPEUFYjnrogp0eG0dY1NBfuZK6HFJrW3dVmH3lCgy_d6WUW1hzdktzQ8O4F82A9zNiGfvkr5h2e7RTdSx0XJRVajlcq_enRVoFs3mKsR3nEdD_9JLLPerb7EO39b8qxcsWwcN3ES5NHQgRqWAsjiGOLI1MeY5VLCEKm_wiuVBArPnOnWDZf-FxULbFO_hwWn_Q4o-I-wg37K0IaZLpvqqfpVuFYZ1art-hWb7vBOtoOMwKW_TFrrfXV5d_Ofp8YfrNyfTvU_npntLOvvu_U8XVx-u3__0est2Mn20Vf0L8m8_1PgTRF6tpp3Rn0l4Hsm_sx-2dLW6bYzJe71qddt_cKKbalmazFbj07bvoI7VQm9f1nFs_f5EONjCFwhA63NHf9KiAnSf5R3tbaTb3geXD0fDIWxHisHAtcP4n4vM5hjPbNnPASy9Rdg17FMLAGC913I72pN8ehvXf6G9-_zh6HH6sKVZZx5Dq9J-NFlyibtcho35ZMj5tpBfT1V_A-CnqL2vQGq7URwd3Jr-VCT3n9PB7sXzHsIH6lY7inXfHfZ9Ht3ta-0OreGPbrhW7Q3xZqEHS0ePmXd9vuv_Ye5dueUx59S4XjDE9acDXHdROrw5tn7YYevP3iBMuU0Wc5OmmU5n5PjtxS8n128vzs7enJ9dX5y__XVdUv1fQCm9ANguAAA";
+
+    const REDIRECT_DELAY_MS = 900;
+    const THEME_KEY = "redirect-page-theme";
+    const THEME_ORDER = ["system", "light", "dark"];
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const themeToggle = document.getElementById("themeToggle");
+    let themeSetting;
+
+    const themeIcons = {
+      system: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
+      light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>',
+      dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>'
+    };
+
+    function currentThemeSetting() {
+      try {
+        const saved = localStorage.getItem(THEME_KEY);
+        return THEME_ORDER.includes(saved) ? saved : "system";
+      } catch {
+        return "system";
+      }
+    }
+
+    function saveThemeSetting(setting) {
+      try {
+        localStorage.setItem(THEME_KEY, setting);
+      } catch {
+        // Theme persistence is optional; redirecting still works without it.
+      }
+    }
+
+    function applyTheme(setting) {
+      const resolved = setting === "system" ? (media.matches ? "dark" : "light") : setting;
+      document.documentElement.dataset.theme = resolved;
+      themeToggle.innerHTML = themeIcons[setting];
+      themeToggle.setAttribute("aria-label", `Theme: ${setting}`);
+      themeToggle.title = `Theme: ${setting}`;
+    }
+
+    themeToggle.addEventListener("click", () => {
+      themeSetting = THEME_ORDER[(THEME_ORDER.indexOf(themeSetting) + 1) % THEME_ORDER.length];
+      saveThemeSetting(themeSetting);
+      applyTheme(themeSetting);
+    });
+
+    media.addEventListener?.("change", () => {
+      if (themeSetting === "system") applyTheme("system");
+    });
+
+    themeSetting = currentThemeSetting();
+    applyTheme(themeSetting);
+    document.documentElement.style.setProperty("--redirect-duration", `${REDIRECT_DELAY_MS}ms`);
+
+    try {
+      const destination = new URL(REDIRECT_URL);
+      if (!/^https?:$/.test(destination.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
+
+      document.getElementById("destination").textContent = destination.hostname;
+      document.getElementById("continueLink").href = destination.href;
+      document.title = `Redirecting to ${destination.hostname}…`;
+
+      window.setTimeout(() => window.location.replace(destination.href), REDIRECT_DELAY_MS);
+    } catch (error) {
+      document.getElementById("card").classList.add("error");
+      document.getElementById("eyebrow").textContent = "Redirect unavailable";
+      document.getElementById("title").textContent = "Set a valid destination URL";
+      document.getElementById("destination").textContent = error.message;
+      document.title = "Redirect unavailable";
+    }
+  </script>
+</body>
+</html>
