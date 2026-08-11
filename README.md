@@ -77,3 +77,7 @@ repo. GitHub Pages allows exactly one custom domain per repository, so a
 `CNAME` file here would move this whole hub onto that domain rather than
 mapping it to a single service. A service needing its own domain needs its own
 repo (or its own host).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
