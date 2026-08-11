@@ -216,6 +216,28 @@
     .variable-doc-title { margin: 0 0 7px; font-size: 12px; }
     .form-share-action { margin-top: 18px; padding: 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
     .form-share-action p { margin: 7px 0 0; color: var(--muted-foreground); font-size: 10px; line-height: 1.45; }
+    .result-view-title { color: var(--muted-foreground); font-size: 11px; font-weight: 650; letter-spacing: 0.01em; }
+    .result-pane-body { padding: 0; }
+    .result-pane-body .template-guide { margin: 0 16px 16px; }
+    .result-summary { padding: 16px; }
+    .result-section { margin-bottom: 20px; }
+    .result-section:last-child { margin-bottom: 0; }
+    .result-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .result-section-title { margin: 0; font-size: 11px; font-weight: 680; }
+    .result-section-count { color: var(--muted-foreground); font-size: 9px; }
+    .result-list { margin: 0; border: 1px solid var(--border); border-radius: 10px; background: var(--card); overflow: hidden; }
+    .result-row { display: grid; grid-template-columns: minmax(90px, 0.8fr) minmax(0, 1.2fr); gap: 14px; padding: 10px 12px; }
+    .result-row + .result-row { border-top: 1px solid var(--border); }
+    .result-label { color: var(--muted-foreground); font-size: 10px; line-height: 1.45; }
+    .result-value { margin: 0; font-size: 11px; font-weight: 560; line-height: 1.45; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .result-value.empty { color: var(--muted-foreground); font-weight: 400; }
+    .result-boolean { display: inline-flex; align-items: center; gap: 6px; }
+    .result-boolean::before { content: ""; width: 7px; height: 7px; border-radius: 999px; background: var(--muted-foreground); opacity: 0.45; }
+    .result-boolean.yes::before { background: var(--success); opacity: 1; }
+    .result-collection { display: grid; gap: 9px; }
+    .result-card { border: 1px solid var(--border); border-radius: 10px; background: var(--card); overflow: hidden; }
+    .result-card-header { min-height: 38px; padding: 9px 12px; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--muted) 48%, var(--card)); font-size: 11px; font-weight: 650; }
+    .result-card .result-list { border: 0; border-radius: 0; }
     .form-section { margin-bottom: 18px; }
     .form-section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; font-size: 11px; font-weight: 670; }
     .collection-card { border: 1px solid var(--border); border-radius: 10px; background: var(--card); margin-bottom: 9px; overflow: hidden; }
@@ -299,6 +321,7 @@
           "control-type"
           "status"; }
       .variable-type-label { margin-top: 7px; }
+      .result-row { grid-template-columns: 1fr; gap: 3px; }
     }
   </style>
 </head>
@@ -2045,12 +2068,14 @@
           Object.assign(ui.share, {
             action: "copy-link",
             title,
-            description: (completed ? "The completed result" : "The configuration") + (state.shareCode.startsWith("g.") ? " is compressed into the URL fragment." : " is encoded in the URL fragment."),
+            description: completed
+              ? "Anyone with this link can view this result and its generated files."
+              : "Anyone with this link can open the template ready to fill.",
             label: "Share link",
             value: url.toString(),
             note: localFile
-              ? "A full file link only works on this device. Copy the code when sharing with someone who has their own copy of this HTML."
-              : "Opening this link loads " + (completed ? "the locked completed result" : "the template") + " automatically. Link length: " + url.toString().length.toLocaleString() + " characters.",
+              ? "This link works on this device. If the other person has their own copy of Boilerplater, use Copy code instead."
+              : "",
             readOnly: true,
             secondary: localFile
           });
@@ -2066,11 +2091,11 @@
 
       function openViewerShareDialog() {
         if (!state.config || state.mode !== "fill") return;
-        if (outputErrors().length) return toast("Resolve the form errors before sharing a locked result.", "error");
+        if (outputErrors().length) return toast("Resolve the form errors before sharing this result.", "error");
         return openEncodedShareDialog(
           { shareVersion: 1, view: "viewer", configuration: state.config, values: snapshotFormValues() },
           "view",
-          "Share completed result",
+          "Share result",
           true
         );
       }
@@ -2084,7 +2109,7 @@
           description: "Paste either a full link or the code beginning with g. or j.",
           label: "Share link or code",
           value: "",
-          note: "Template links open in Preview mode. Completed-result links open in locked Viewer mode.",
+          note: "Template links open ready to fill. Result links open as a finished result.",
           readOnly: false,
           secondary: false
         });
@@ -2108,7 +2133,7 @@
               try { location.hash = decoded.hashKey + "=" + decoded.code; } catch {}
             }
             loadConfiguration(decoded.config, decoded.mode, decoded.values);
-            toast(decoded.mode === "viewer" ? "Completed result opened." : "Shared template opened.", "success");
+            toast(decoded.mode === "viewer" ? "Result opened." : "Shared template opened.", "success");
           }
           closeDialog("shareDialog");
         } catch (error) {
@@ -2379,8 +2404,7 @@
         props: {
           field: { type: Object, required: true },
           collection: { type: String, default: "" },
-          index: { type: Number, default: -1 },
-          readOnly: { type: Boolean, default: false }
+          index: { type: Number, default: -1 }
         },
         setup(props) {
           const value = computed(() => props.collection
@@ -2389,8 +2413,8 @@
           const inputId = computed(() => "field-" + (props.collection ? props.collection + "-" + props.index + "-" : "global-") + props.field.key.replace(/[^a-zA-Z0-9_-]/g, "-"));
           const supportId = computed(() => inputId.value + "-support");
           const error = computed(() => validateFieldValue(props.field, value.value));
-          const locked = computed(() => Boolean(props.field.derive) || props.readOnly);
-          const lockBadge = computed(() => props.field.derive ? "Derived" : props.readOnly ? "Locked" : "");
+          const locked = computed(() => Boolean(props.field.derive));
+          const lockBadge = computed(() => props.field.derive ? "Derived" : "");
           const update = event => updateFormValue(props.field.key, event.target.type === "checkbox" ? event.target.checked : event.target.value, props.collection, props.index);
           return { value, inputId, supportId, error, locked, lockBadge, update };
         },
@@ -2423,46 +2447,45 @@
           </div>`
       };
 
+      function collectionItemTitle(collection, item, index) {
+        const all = [...collection.fields.values()];
+        const titleField = all.find(field => field.key === "name" && String(item[field.key] ?? "").trim())
+          || all.find(field => collection.directFields.has(field.key) && String(item[field.key] ?? "").trim())
+          || all.find(field => String(item[field.key] ?? "").trim());
+        return titleField ? String(item[titleField.key]).trim() : singularize(collection.label) + " " + (index + 1);
+      }
+
       const GeneratedForm = {
-        props: { readOnly: { type: Boolean, default: false } },
         setup() {
           const globals = computed(() => [...(state.analysis?.globals.values() || [])]);
           const collections = computed(() => [...(state.analysis?.collections.values() || [])]);
           const hasFields = computed(() => globals.value.length || collections.value.length);
           const items = collection => state.values.collections[collection.key] || [];
           const fields = collection => [...collection.fields.values()];
-          const title = (collection, item, index) => {
-            const all = fields(collection);
-            const titleField = all.find(field => field.key === "name" && String(item[field.key] ?? "").trim())
-              || all.find(field => collection.directFields.has(field.key) && String(item[field.key] ?? "").trim())
-              || all.find(field => String(item[field.key] ?? "").trim());
-            return titleField ? String(item[titleField.key]).trim() : singularize(collection.label) + " " + (index + 1);
-          };
-          return { state, icons, globals, collections, hasFields, items, fields, title, setMode, addCollectionItem, removeCollectionItem, singularize };
+          return { state, icons, globals, collections, hasFields, items, fields, title: collectionItemTitle, setMode, addCollectionItem, removeCollectionItem, singularize };
         },
         template: `
           <div v-if="hasFields">
             <section v-if="globals.length" class="form-section">
               <div class="form-section-title"><span>Shared values</span></div>
-              <field-control v-for="field in globals" :key="field.reference" :field="field" :read-only="readOnly"></field-control>
+              <field-control v-for="field in globals" :key="field.reference" :field="field"></field-control>
             </section>
             <section v-for="collection in collections" :key="collection.key" class="form-section">
               <div class="form-section-title">
                 <span>{{ collection.label }}</span>
-                <span v-if="readOnly" class="badge">{{ items(collection).length }}</span>
-                <button v-else class="button small" type="button" @click="addCollectionItem(collection.key)">
+                <button class="button small" type="button" @click="addCollectionItem(collection.key)">
                   <span v-html="icons.plus"></span> Add {{ singularize(collection.label).toLowerCase() }}
                 </button>
               </div>
               <article v-for="(item, index) in items(collection)" :key="item.__id || index" class="collection-card">
                 <div class="collection-card-header">
                   <span class="collection-card-title">{{ title(collection, item, index) }}</span>
-                  <button v-if="!readOnly" class="icon-button" type="button" :disabled="items(collection).length <= 1"
+                  <button class="icon-button" type="button" :disabled="items(collection).length <= 1"
                     aria-label="Remove item" title="Remove item" @click="removeCollectionItem(collection.key, index)" v-html="icons.trash"></button>
                 </div>
                 <div class="collection-card-body">
                   <field-control v-for="field in fields(collection)" :key="field.reference" :field="field"
-                    :collection="collection.key" :index="index" :read-only="readOnly"></field-control>
+                    :collection="collection.key" :index="index"></field-control>
                 </div>
               </article>
             </section>
@@ -2471,14 +2494,69 @@
             <div class="empty-state-inner">
               <div class="empty-state-icon" v-html="icons.braces"></div>
               <strong>No form fields</strong>
-              <p>{{ readOnly ? "This result does not contain any form values." : "Add dynamic values to folders, filenames, or file contents." }}</p>
-              <button v-if="!readOnly" class="button" type="button" @click="setMode('configure')">Open Configure mode</button>
+              <p>Add dynamic values to folders, filenames, or file contents.</p>
+              <button class="button" type="button" @click="setMode('configure')">Open Configure mode</button>
             </div>
           </div>`
       };
 
+      const ResultSummary = {
+        setup() {
+          const globals = computed(() => [...(state.analysis?.globals.values() || [])]);
+          const collections = computed(() => [...(state.analysis?.collections.values() || [])]);
+          const hasFields = computed(() => globals.value.length || collections.value.length);
+          const items = collection => state.values.collections[collection.key] || [];
+          const fields = collection => [...collection.fields.values()];
+          const value = (field, item = null) => item ? item[field.key] : state.values.globals[field.key];
+          const empty = current => current == null || current === "";
+          const display = (field, current) => field.type === "boolean" ? (current ? "Yes" : "No") : empty(current) ? "Not provided" : String(current);
+          return { icons, globals, collections, hasFields, items, fields, value, empty, display, title: collectionItemTitle };
+        },
+        template: `
+          <div v-if="hasFields" class="result-summary">
+            <section v-if="globals.length" class="result-section">
+              <div class="result-section-heading"><h2 class="result-section-title">Details</h2></div>
+              <dl class="result-list">
+                <div v-for="field in globals" :key="field.reference" class="result-row">
+                  <dt class="result-label">{{ field.label }}</dt>
+                  <dd class="result-value" :class="{ empty: empty(value(field)) }">
+                    <span v-if="field.type === 'boolean'" class="result-boolean" :class="{ yes: Boolean(value(field)) }">{{ display(field, value(field)) }}</span>
+                    <template v-else>{{ display(field, value(field)) }}</template>
+                  </dd>
+                </div>
+              </dl>
+            </section>
+            <section v-for="collection in collections" :key="collection.key" class="result-section">
+              <div class="result-section-heading">
+                <h2 class="result-section-title">{{ collection.label }}</h2>
+                <span class="result-section-count">{{ items(collection).length }} {{ items(collection).length === 1 ? "item" : "items" }}</span>
+              </div>
+              <div class="result-collection">
+                <article v-for="(item, index) in items(collection)" :key="item.__id || index" class="result-card">
+                  <div class="result-card-header">{{ title(collection, item, index) }}</div>
+                  <dl class="result-list">
+                    <div v-for="field in fields(collection)" :key="field.reference" class="result-row">
+                      <dt class="result-label">{{ field.label }}</dt>
+                      <dd class="result-value" :class="{ empty: empty(value(field, item)) }">
+                        <span v-if="field.type === 'boolean'" class="result-boolean" :class="{ yes: Boolean(value(field, item)) }">{{ display(field, value(field, item)) }}</span>
+                        <template v-else>{{ display(field, value(field, item)) }}</template>
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+              </div>
+            </section>
+          </div>
+          <div v-else class="empty-state">
+            <div class="empty-state-inner"><div class="empty-state-icon" v-html="icons.braces"></div><strong>No details</strong><p>This result does not include any values.</p></div>
+          </div>`
+      };
+
       const TemplateGuide = {
-        props: { always: { type: Boolean, default: false } },
+        props: {
+          always: { type: Boolean, default: false },
+          label: { type: String, default: "Template guide" }
+        },
         setup(props) {
           const markdown = computed(() => state.config?.instructions || "");
           const show = computed(() => props.always || markdown.value.trim());
@@ -2486,20 +2564,21 @@
           return { show, html };
         },
         template: `
-          <section v-if="show" class="template-guide" aria-label="Template guide">
-            <div class="template-guide-label">Template guide</div>
+          <section v-if="show" class="template-guide" :aria-label="label">
+            <div class="template-guide-label">{{ label }}</div>
             <div v-if="html" class="template-guide-content" v-html="html"></div>
             <div v-else class="template-guide-empty">Add Markdown instructions in Template details.</div>
           </section>`
       };
 
       const VariableDocs = {
+        props: { label: { type: String, default: "Form documentation" } },
         setup() {
           return { fields: computed(documentedFields), renderMarkdown };
         },
         template: `
-          <section v-if="fields.length" class="template-guide variable-docs" aria-label="Form documentation">
-            <div class="template-guide-label">Form documentation</div>
+          <section v-if="fields.length" class="template-guide variable-docs" :aria-label="label">
+            <div class="template-guide-label">{{ label }}</div>
             <article v-for="field in fields" :key="field.reference" class="variable-doc">
               <h3 class="variable-doc-title">{{ field.label }}</h3>
               <div class="template-guide-content" v-html="renderMarkdown(field.docs)"></div>
@@ -2611,9 +2690,9 @@
               <div class="brand-title">Boilerplater</div>
             </div>
             <div class="header-center">
-              <span v-if="state.config && state.mode === 'viewer'" class="badge">Read-only result</span>
+              <span v-if="state.config && state.mode === 'viewer'" class="result-view-title">Result</span>
               <div v-else-if="state.config" class="segmented" aria-label="Application mode">
-                <button class="segment" :class="{ active: state.mode === 'fill' }" type="button" @click="setMode('fill')"><span class="desktop-only">Fill &amp; preview</span><span class="mobile-only">Fill</span></button>
+                <button class="segment" :class="{ active: state.mode === 'fill' }" type="button" @click="setMode('fill')">Preview</button>
                 <button class="segment" :class="{ active: state.mode === 'configure' }" type="button" @click="setMode('configure')"><span class="desktop-only">Configure</span><span class="mobile-only">Edit</span></button>
               </div>
             </div>
@@ -2774,20 +2853,26 @@
               </template>
 
               <template v-else>
-                <aside class="pane" :aria-label="state.mode === 'viewer' ? 'Locked completed form' : 'Template form'">
+                <aside class="pane" :aria-label="state.mode === 'viewer' ? 'Result summary' : 'Template form'">
                   <div class="pane-header">
-                    <div class="pane-heading"><div class="pane-title">{{ state.config.name }}</div><div v-if="state.mode === 'viewer'" class="pane-subtitle">Completed values</div></div>
-                    <span v-if="state.mode === 'viewer'" class="badge">Locked</span>
-                    <button v-else class="button ghost small" type="button" @click="resetValues">Reset</button>
+                    <div class="pane-heading"><div class="pane-title">{{ state.config.name }}</div></div>
+                    <button v-if="state.mode !== 'viewer'" class="button ghost small" type="button" @click="resetValues">Reset</button>
                   </div>
-                  <div class="pane-body form-pane-body">
-                    <generated-form :read-only="state.mode === 'viewer'"></generated-form>
-                    <variable-docs></variable-docs>
-                    <template-guide></template-guide>
-                    <section v-if="state.mode !== 'viewer'" class="form-share-action" aria-label="Share completed result">
-                      <button class="button primary wide" type="button" :disabled="errors.length" @click="openViewerShareDialog"><span v-html="icons.link"></span> Create locked end-user link</button>
-                      <p>{{ errors.length ? "Resolve the form errors before sharing this completed result." : "Includes the current values and opens a read-only form, generated file tree, and file preview." }}</p>
-                    </section>
+                  <div class="pane-body" :class="state.mode === 'viewer' ? 'result-pane-body' : 'form-pane-body'">
+                    <template v-if="state.mode === 'viewer'">
+                      <result-summary></result-summary>
+                      <variable-docs label="Notes"></variable-docs>
+                      <template-guide label="About this template"></template-guide>
+                    </template>
+                    <template v-else>
+                      <generated-form></generated-form>
+                      <variable-docs></variable-docs>
+                      <template-guide></template-guide>
+                      <section class="form-share-action" aria-label="Share result">
+                        <button class="button primary wide" type="button" :disabled="errors.length" @click="openViewerShareDialog"><span v-html="icons.link"></span> Share result</button>
+                        <p v-if="errors.length">Complete the required values before sharing.</p>
+                      </section>
+                    </template>
                   </div>
                 </aside>
 
@@ -2910,7 +2995,7 @@
               <div class="dialog-header"><h2 id="shareDialogTitle">{{ ui.share.title }}</h2><p>{{ ui.share.description }}</p></div>
               <div class="dialog-body">
                 <div class="field"><label for="shareValue">{{ ui.share.label }}</label><textarea class="textarea-small share-value" id="shareValue" v-model="ui.share.value" :readonly="ui.share.readOnly" spellcheck="false" @keydown.enter.exact.prevent="handleShareSubmit()"></textarea></div>
-                <div class="dialog-note">{{ ui.share.note }}</div>
+                <div v-if="ui.share.note" class="dialog-note">{{ ui.share.note }}</div>
               </div>
               <div class="dialog-footer">
                 <button class="button" type="button" @click="closeShare">Cancel</button>
@@ -2933,6 +3018,7 @@
       app.component("output-tree-node", OutputTreeNode);
       app.component("field-control", FieldControl);
       app.component("generated-form", GeneratedForm);
+      app.component("result-summary", ResultSummary);
       app.component("template-guide", TemplateGuide);
       app.component("variable-docs", VariableDocs);
       app.component("syntax-help", SyntaxHelp);
@@ -2957,7 +3043,7 @@
         try {
           const decoded = await decodeShareCode(location.hash);
           loadConfiguration(decoded.config, decoded.mode, decoded.values);
-          toast(decoded.mode === "viewer" ? "Completed result opened." : "Shared template opened.", "success");
+          toast(decoded.mode === "viewer" ? "Result opened." : "Shared template opened.", "success");
         } catch (error) {
           toast(error.message || "Could not open the shared template.", "error");
         }
@@ -2971,6 +3057,7 @@
         getConfiguration: () => deepClone(state.config),
         getRenderedFiles: () => flattenOutputFiles(state.rendered?.tree || []).map(file => ({ path: file.path, content: file.content })),
         createShareCode: () => encodeShareCode(state.config),
+        createResultShareCode: () => encodeShareCode({ shareVersion: 1, view: "viewer", configuration: state.config, values: snapshotFormValues() }),
         createViewerShareCode: () => encodeShareCode({ shareVersion: 1, view: "viewer", configuration: state.config, values: snapshotFormValues() }),
         openShareCode: async code => {
           const decoded = await decodeShareCode(code);
