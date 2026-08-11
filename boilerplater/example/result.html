@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Redirecting…</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #fafafa;
+      --foreground: #18181b;
+      --card: #ffffff;
+      --muted: #f4f4f5;
+      --muted-foreground: #71717a;
+      --border: #e4e4e7;
+      --primary: #18181b;
+      --primary-foreground: #fafafa;
+      --ring: #a1a1aa;
+      --danger: #dc2626;
+      --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 18px 48px rgb(0 0 0 / 0.08);
+      --redirect-duration: 900ms;
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --background: #09090b;
+      --foreground: #fafafa;
+      --card: #111113;
+      --muted: #202023;
+      --muted-foreground: #a1a1aa;
+      --border: #2e2e32;
+      --primary: #fafafa;
+      --primary-foreground: #18181b;
+      --ring: #71717a;
+      --danger: #f87171;
+      --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 22px 60px rgb(0 0 0 / 0.3);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 12%, color-mix(in srgb, var(--foreground) 4%, transparent), transparent 34%),
+        var(--background);
+      color: var(--foreground);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      color: var(--foreground);
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+      cursor: pointer;
+    }
+
+    .theme-toggle:hover { background: var(--muted); }
+    .theme-toggle svg { width: 16px; height: 16px; }
+
+    .theme-toggle:focus-visible,
+    .button:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    .card {
+      width: min(420px, 100%);
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 18px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--muted);
+    }
+
+    .icon svg { width: 19px; height: 19px; }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--muted-foreground);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+    }
+
+    .destination {
+      min-height: 20px;
+      margin: 8px 0 0;
+      color: var(--muted-foreground);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .progress {
+      height: 4px;
+      margin: 22px 0 16px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--muted);
+    }
+
+    .progress-bar {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+      transform-origin: left;
+      animation: redirect-progress var(--redirect-duration) linear both;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--primary);
+      border-radius: 9px;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font-size: 12px;
+      font-weight: 620;
+      text-decoration: none;
+    }
+
+    .button:hover { opacity: 0.9; }
+    .button svg { width: 15px; height: 15px; }
+
+    .card.error .icon { color: var(--danger); }
+    .card.error .eyebrow { color: var(--danger); }
+    .card.error .progress, .card.error .button { display: none; }
+
+    @keyframes redirect-progress {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 16px; }
+      .card { padding: 21px; }
+      .theme-toggle { top: 12px; right: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .progress-bar { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: system" title="Theme: system"></button>
+
+  <main class="card" id="card">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M5 12h14M14 7l5 5-5 5"/>
+      </svg>
+    </div>
+    <p class="eyebrow" id="eyebrow">Redirecting</p>
+    <h1 id="title">Taking you there…</h1>
+    <p class="destination" id="destination" role="status" aria-live="polite">Preparing your destination</p>
+    <div class="progress" aria-hidden="true"><span class="progress-bar"></span></div>
+    <a class="button" id="continueLink" href="#">
+      Continue now
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M5 12h14M14 7l5 5-5 5"/>
+      </svg>
+    </a>
+  </main>
+
+  <script>
+    // Change this one value to your destination.
+    const REDIRECT_URL = "https://moeckery.github.io/boilerplater/?r=1f70505a#view=g.H4sIAAAAAAAAA81a63Pbtpb_VzC8_dBmdSQ-wAc049nNtd002yT2OOnd7URZDx4HNGsK5CUpJ67G__sOSEqibNF2etPu-oNFEsB54XcODg6wduorXuE_sKqzwjhzb-LcZPjZmbc_WDkTRxZGZ-mq4k3bY-3oolryZjjE8CU6c-cX02RNjoo0uCxz3qAzcTJTN9VK2rG1M3c-XGX1tpnICnmDNeGk4VleVKjIq-NzssxkVdRY3WQSa1JhWdRZU1S3RFfFknCSZ3VDCk1ksSwLg6appwuzMKdcXu2-EckNyYzCEo1C0-S3ZFUjeVconP5WT8j5bXNVmAkpKvKqINwoorDMi1vSFOTVz6cTcpwXK0UuVl2f7u3HlelUaRl-uEKSosGKN6iGcmZG5itlFSvLPJOt5UgtudZFrjKTTogsTMMzgxXZM--G699XWa5IU2VpilU9IcevZ8cn97v-vBJYGbQGXHKTaaybetJq0hE56fSpsC5WlbXk5yuscCOTyLFV4rwqfkPZkNcn9YT0RidcymJlLLnOKEtr0DIrMc8M1hPS8CpF21xhas3Rsd1wIhYPNdFFnhefyUu5RCv6DZrWdISvmmLJm0zyPL-dOhPnhleZlae26Co7eexjzgXmztzpRXQmjsJaVlnZIXHzndRXRdUQLqvC3C7tZLV4nDgV_nOVVaiceVOtcOKUvGmwsiP_5yOH3z_Zfy6wTy--__c5bF7-7YcX3znbvm-xrnnagrtGkhefsZLcPqFtrlu1zWop7HONJe-gIG5JnZk0R3J1W16hqafOnXWkLVy3j0M133VS7-toP1qsd_NgrbSD-P9rFTuIDPU72UHpQ9d4X9n3mNv55G0UqFamyQ7M4z6bnJt01Yq_PkysJ0O2HR_Qu5s4TYXozD-unUw5c4dxTDxPuCDdKAIqmAvcDxVE0o9CoVXsBbEzcZrb0lrN-nQbKPsoOJXW-4T1YBs9r7JcVWh21BPJYx7EFBKqA6CKISSIDCI_QJ9K1xeBGFDPctzR3kSE6S1f5l1sbloUbVvmC7Ne_00XFfl-a6XJVvmN5_5AMjMIn3d3C0MItH4zJwtnve698O4O1uttv7s7WPLMLBzbm5C-jx3A5RJhOKqsCrXp14WtH7Mcz3lz1dHf0ZztzNVqtRmFNl58uC1xTspVfdV97AOrepU1F6jrOfm4cCrU9ewKuapnnXSf9vtaxl3P9doqeHc3e_Fi26uPeC-7gGeF65WoZweVmu0PqAfiD_v-x8HB04wvp2lPoY-xNhZYndfrmS6quzvn7tPdZAOVJFQsYAzQlwooZRFwHipQGEUhCzHyQz4OxO_vo6Cb-x0a7qHgh4NwlXEcchUqcP0oBhq6ApiOIkg4VVEYUi2EGJfh48ct_U-fDtLXSaQj5ibgU4pAg0gAY0EEUUBd11VIdUQf0fHzFZpesaP0Gkd08CKeBIKDwpgBFSiARzwBxcMoiWRMQ_qIQ18n9UGqnoh4TF0FHCME6sUMWCJdSOI4UFz5USjZmCPvltWHrszLrE-u5naxrmc33sJcZ0bNyS6ELswSG654w-cWyJ3n7vmq_dyG3nreQZ2X5fR6mzNMs2J2cFRdomxHVNgmCvWc-Pa1buNpUfXUlryRV2-G9J_NgWwzwA2toSr2L9-n-xWUCdnK_9C9342NIbuEbMgVxuy6-cuWPH2svSyqZkhwSPSqacr9loEU50XVzEniJu6wS4Vc2QSsPq8KgffoWnqvsJnfp1m2QddGyLy5etDY8nkoSmayJuP5Ceb89j3Kwqh6TsJhnzy7wf87Ubxw3y59inuPo13obVb8QBBZrubEc93l_YYlLovqdk48P3mb7Tfm2TIbI7VwvM269ZBW6PlvM2cb1FFL6ScBg0i6PlAZe8BUkEBCmQq5J9D19FjY6OH8eMzYhYv3Xfe_IFY07UJ9nK_qBqvX5wfixbM9eOgzh3yl7F1j894F__MtenaWDkIdx0wwYJHNtKQXQRIpD6jH_ThJYl9EOGbpq5I_EZlXTVFLnmcmnd34G4v_VFTZ79aJ8_NCvey7YPWcGdjash3SZcgXqLfmO7Ao2IaHC4P9OmLbZWYu9qP6kn_ZffFaoy6xqTK5m4Jubi96H9uYfeNzA4fomMpytfvUTc6e03TkfmmyPPu93ckOG_kNVjzFQeucxO5uSjlnbhBSDehrF2gkYmC-9iAWvpvEUSBZGD_hPLBJvL7Oifol5Hm-xI0pmlb8jRnbzO8aLe5TWcI9WR5Nur82l7QZ5C6HZFRGIqAxSO25QCl1QfgqAU5jX4WJ9JIoeSS_SqtiVRL8wpdljiMpIseYocsFaGYnhbkRiMSXwJkMo4R6wotGE6FpmjVZaooK96Zi4MRURJppDWEUa6AoIkg8zwPOFcPYZa58bDPW5YebhPfIFAp_G9GCcqEl1QxoTCOgoU1EeeRBjCHzQz9SzJPPTER1XyYaYST9gMZSQqhZCJRRDkyECQg_VgkNvEhROWYuW9D6Mv2tvmes3XTHgiktpQcokAHVSoFwuQce8phSZAq1_5QWpmiep0mAge96GoElTACVnAJToQuBDhMvYNzXwh31xkrORrTZ6OLHnusqrSHAOAGqfQ4spAJc6gce4y71IjVGvuTymqe21FeYB8YaeAcGkUq0D54QgY0nEhKJAoQbuzxOYiVZ9Gx0lW1J8bCpIjf2ZUgpKEE5UClcYFqGIKQvfZUESSK9b4IuL2QRYyoEl1sYx4EHLIx98HSiWewnFNnoomf3z9PydhRcWkRUR0pAzKl1dCaBU6nsK2OSh5p7T1rr2eCSivIIKYfIpkiUxhy4CEKQ1EfO0fMfmX0LrsPKTLbbWhEJV_uglYqBYhSDiGIPEs-Vru_7oab-GPW-frTs6lxfmkfwFcc6Yn4Yg8t9tJElBiEZhzD0PUmpzwU-GVS2-EqLkfgbculRykEEdguNygUWCw-U67lIRcKlYN8IW4GMldTAE1cBjaWCxOMCYk9oX8WBpGw0cm0oT9NiFF8uj5Iw5gnQ0A-AxiiA-ZyC69NEMJ9LGT62Vn1t8IpU6IYhJG1hAyMXuKQa3DiMPM3QT3Q4poxcdoUgrDqYPdBpm6-4buwlEYfI0xqoG8bAQjcAJQULUdNAJMEYk7SYLgt1AFwDh9Q6EdxLwBfMGkzZxVElIAIWqSARyldPRpVnG4xGlGkaMAhidC3MBCQ2nfD9BHUUMuFFo9H-pJDXWPXfdvqs13_L9P3l2aZQP16cvSX2de5T4HmZGbSHFf91dvHzyesLMuNlad-Pz85_JX2of9HGejKdLczFL--IKZdEZgSgWGbNkcKbbf-6kmQ6qytpv_zy_vSiZdSeIL37Bzk_u_hw1G28T__7_Oz9ab8LX5jjtye2ith2diZksbeEtQXF9XqWaSt-W4QdatYtDVvNutd5MPUCqPNsOarb_VBDpp12ZVYSe7TG85wAmAIkl1cIKqsIVA9GHVbd0lnVWHGlCEB9Wze4JC3z1ii9GM-ySboymSwq09kFQGRGHc3bThtLTa2jzC3Rxy2VFlsrpYX9OvemfthjgLx8T9pa657Ben1aDTunsT_1arkFQ1oQ-1UVn01ecLXtPd3Y8_jV2eXpu5d_f3N6cuSSV2dn74_yzKy-2JEtQwIF2dR-yXS2CwCWVietrGx2r7K6qYoc63pW2y2ABIUi48bz56YwVVHsZgPAHmgedfS3xDcPTxv_9N2Hi1_Pz16_-2DnYDtuYN9dIGIRdUO71AlfSqA8DCCJNINYuiJCl_l-Mhq6p6r13gNpus3eF2aXwy_M_Wq-2Xn-wlycvjx5ezpdthMwRXPT_Z--WJgX07xI7WfrXpfLQq1yrBfm8rK8baF9eWn7lLcfZaE-LezC3mDdXLZtCzO9aYktjMjMwtgpWJgeJ7LotpS21Q6pu5-FeXFpf6dpYVtsjXdnqwQl2iMZkdhysWeXIWswgZ72eKwxpuNp7XV3yvv47nLTa3ZDBTY83uw1j9ujEivQwV3myAZx50V9HG8noVq18WZ7NNzVdPnnX_ky3-7thwUlS6arS7fNGyJzsr474LC7mvvTXK6TevbiEA9bEJJNvsdiMA9MBi4GIehAuPakzAMexwokj5mkkRvRYDQDbKXvOD0-FX2ftv80LYo0R7uN3iu621pndXven3__kempscp4vqHQlXkanuKgytLa87V6hFB3qmYWBgAW5uuU6OpJXyv6lmO_orwsy6q44fmc2JPTR3FnkdOWFQvZ13GeOFjbdKxnqxokmqbiufck8NJr7NHalh7_GJdZP7qePTjD3KFykKYKT_meH0CgqQYqPA3CFzEEcRT7iML12JMliXsWG9k0Co9hIAVEYSCABsxWCgIJkfC178YelXo0e3xWqbjtZNLpteFNdoNThTezA-Xjr8X7vWLykhueogJxO--iCnR4bR1jW0F-4kjoYUmt_bqrwu4psczMe1tGtYU1d1iaHx3Av2wHeNsRT54lfcOy3YOTqOPCyFVVoZG3e_XubInFqtkehQSu-2DoX3qI5X31Kdbh05p_9YBl56Chp5VHIxcSVAooSxJIYlsTY75LBdNU-aNHLPcSmD3XqRss-xsWK2NTvPsbp_2LFH1G2EG-JWlDTJdM9VX9Kt0pDJvUdvMKze55EK2gozAtr9MWut-dX5z95-nxh8vXJ7O9q3OzvSmdf_f-p7OLD5fvf3q5IzudPViq_gX5dxc1_gSR1-tZZ_QnEp4H8g_Ww7Zfra6bosh7vWp13V84MU11WxaZrcanbdtBHauV2b1s4tjm_ZFwsIMvEIDW547-pEkF6K7lHe0tpLvWe4cPR-MhbCDFaOAaEP7nKrM5xhNL9lMAS68RhoZ9bAIArPdaakd7ks-uk_ovtHefPxw9TB92fTaZx9istJcmSy5xSGXcmI-GnG8L-Q2r-hsAP0XjfwVS24Xi6ODS9Kciub9OB8OD5z2Ej9StBop19w77Np8O21q7Q2v4oytuVHtCvJ3o0dLRQ-JdW-AFf5h6V255SDktPD8co_rTAapDlI4vjq0fdtj6sxeIotwli3mRpplJ5-T4zdkvJ5dvzl69ev3u1eXZuze_bkuqzg3PV90d5DQvBM_3ryM7PIM-E4C6Wams6C685vaWQ3e7fT24mNom8ZeX3TU-VNSWYoGHrgSqaAwsiSQIEcgo0TrxE9cZ3Gp15s5nFLwsnYmzu9_qdEiyeUt_tdbZLHvtlrlnFgcYoLKHJaGWQF2XAncZB2TSdynzfIb8HjNeZvuc2nL2o1yYVC73LRfGKdDERWChF0DiJvaczg8CGtzjsjFef2M-a8_lBkw7LA8Zp9c45Km5F6o4CkEn9tw08ENIkHMIFMYokzAII32PZwu3P84x1HEQI_eBt9X7hIaQ8FiAcpOAKa4Veg9sWdfY2Ngvsa6L6imGG9-wKLy7-18HildJjjEAAA";
+
+    const REDIRECT_DELAY_MS = 900;
+    const THEME_KEY = "redirect-page-theme";
+    const THEME_ORDER = ["system", "light", "dark"];
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const themeToggle = document.getElementById("themeToggle");
+    let themeSetting;
+
+    const themeIcons = {
+      system: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
+      light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>',
+      dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>'
+    };
+
+    function currentThemeSetting() {
+      try {
+        const saved = localStorage.getItem(THEME_KEY);
+        return THEME_ORDER.includes(saved) ? saved : "system";
+      } catch {
+        return "system";
+      }
+    }
+
+    function saveThemeSetting(setting) {
+      try {
+        localStorage.setItem(THEME_KEY, setting);
+      } catch {
+        // Theme persistence is optional; redirecting still works without it.
+      }
+    }
+
+    function applyTheme(setting) {
+      const resolved = setting === "system" ? (media.matches ? "dark" : "light") : setting;
+      document.documentElement.dataset.theme = resolved;
+      themeToggle.innerHTML = themeIcons[setting];
+      themeToggle.setAttribute("aria-label", `Theme: ${setting}`);
+      themeToggle.title = `Theme: ${setting}`;
+    }
+
+    themeToggle.addEventListener("click", () => {
+      themeSetting = THEME_ORDER[(THEME_ORDER.indexOf(themeSetting) + 1) % THEME_ORDER.length];
+      saveThemeSetting(themeSetting);
+      applyTheme(themeSetting);
+    });
+
+    media.addEventListener?.("change", () => {
+      if (themeSetting === "system") applyTheme("system");
+    });
+
+    themeSetting = currentThemeSetting();
+    applyTheme(themeSetting);
+    document.documentElement.style.setProperty("--redirect-duration", `${REDIRECT_DELAY_MS}ms`);
+
+    try {
+      const destination = new URL(REDIRECT_URL);
+      if (!/^https?:$/.test(destination.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
+
+      document.getElementById("destination").textContent = destination.hostname;
+      document.getElementById("continueLink").href = destination.href;
+      document.title = `Redirecting to ${destination.hostname}…`;
+
+      window.setTimeout(() => window.location.replace(destination.href), REDIRECT_DELAY_MS);
+    } catch (error) {
+      document.getElementById("card").classList.add("error");
+      document.getElementById("eyebrow").textContent = "Redirect unavailable";
+      document.getElementById("title").textContent = "Set a valid destination URL";
+      document.getElementById("destination").textContent = error.message;
+      document.title = "Redirect unavailable";
+    }
+  </script>
+</body>
+</html>
