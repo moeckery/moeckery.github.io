@@ -167,6 +167,9 @@
     .badge { display: inline-flex; align-items: center; min-height: 19px; padding: 1px 6px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted-foreground); background: var(--card); font-size: 9px; font-weight: 620; }
     .badge.blue { color: var(--blue); background: var(--blue-soft); border-color: color-mix(in srgb, var(--blue) 24%, var(--border)); }
     .badge.danger-badge { color: var(--danger); background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 24%, var(--border)); }
+    .badge-button { cursor: pointer; font: inherit; font-size: 9px; font-weight: 620; transition: background 120ms ease, border-color 120ms ease; }
+    .badge-button:hover { background: color-mix(in srgb, var(--blue) 18%, transparent); border-color: color-mix(in srgb, var(--blue) 44%, var(--border)); }
+    .badge-button:active { transform: translateY(1px); }
     .input-list { display: grid; gap: 7px; }
     .input-item { width: 100%; display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 7px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--background); color: inherit; text-align: left; }
     button.input-item { cursor: pointer; }
@@ -2059,11 +2062,25 @@
         }
       }
 
+      // A fresh key on every generated link. A pasted link that differs from
+      // the current one only in its hash does not reload the page, so without
+      // this the shared template or result would never open for someone who is
+      // already sitting on Boilerplater.
+      function refreshKey() {
+        const bytes = new Uint8Array(4);
+        if (globalThis.crypto?.getRandomValues) {
+          globalThis.crypto.getRandomValues(bytes);
+          return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+        }
+        return Math.random().toString(36).slice(2, 10);
+      }
+
       async function openEncodedShareDialog(payload, hashKey, title, completed = false) {
         try {
           state.shareCode = await encodeShareCode(payload);
           state.shareHashKey = hashKey;
           const url = new URL(location.href);
+          url.searchParams.set("r", refreshKey());
           url.hash = hashKey + "=" + state.shareCode;
           const localFile = location.protocol === "file:";
           Object.assign(ui.share, {
@@ -2140,6 +2157,16 @@
         } catch (error) {
           toast(error.message || "Could not use this share code.", "error");
         }
+      }
+
+      function openShareLink() {
+        if (!ui.share.value) return;
+        let opened = null;
+        try {
+          opened = window.open(ui.share.value, "_blank", "noopener");
+        } catch {}
+        if (!opened) return toast("Your browser blocked that. Copy the link instead.", "error");
+        closeDialog("shareDialog");
       }
 
       async function readConfigurationFile(file, input = null) {
@@ -2660,6 +2687,25 @@
             area.setRangeText("  ", start, area.selectionEnd, "end");
             updateFileContent(area.value);
           };
+          // The pill next to "Content" advertises the {{ value }} syntax. Clicking
+          // it writes that syntax rather than leaving the reader to type it:
+          // selected text becomes the value name, otherwise the caret lands
+          // between the braces ready for one. mousedown is prevented so the
+          // textarea keeps focus and its caret position through the click.
+          const insertValueReference = () => {
+            const area = document.getElementById("fileContentEditor");
+            if (!area) return;
+            const start = area.selectionStart ?? area.value.length;
+            const end = area.selectionEnd ?? start;
+            const name = area.value.slice(start, end).trim();
+            area.focus();
+            area.setRangeText("{{ " + name + " }}", start, end, "end");
+            if (!name) {
+              const caret = start + 3;
+              area.setSelectionRange(caret, caret);
+            }
+            updateFileContent(area.value);
+          };
           const variableIcon = item => item.type === "collection" ? icons.braces : item.type === "boolean" ? icons.check : icons.rename;
           const variableLabelPlaceholder = computed(() => variableField.value?.label || (ui.variable.name ? humanize(ui.variable.name) : "Display label"));
           const closeCreate = () => closeDialog("createDialog");
@@ -2671,7 +2717,7 @@
             variableState, variableField, variableCanRemove, variableNameLocked, variableDescription,
             variableLabelPlaceholder, createTitle, sharePrimaryLabel, emptyOutput,
             chooseFile, openAdd, onFileChange, onDragOver, onDragLeave, onDrop,
-            configNameChanged, instructionsChanged, indentEditor, variableIcon,
+            configNameChanged, instructionsChanged, indentEditor, insertValueReference, variableIcon,
             closeCreate, closeVariable, closeShare,
             setTheme, setMode, requestNewConfiguration, requestOpenConfiguration, saveConfiguration,
             openShareDialog, openViewerShareDialog, openShareCodeDialog, resumeDraft,
@@ -2679,7 +2725,7 @@
             duplicateSelected, requestDeleteSelected, openVariableDialog, resetValues,
             copyOutput, downloadOutput, renderCodePreview, fileLanguage,
             createItemFromDialog, cancelConfirmation, confirmAction,
-            saveVariableDefinition, removeVariableDefinition, handleShareSubmit
+            saveVariableDefinition, removeVariableDefinition, handleShareSubmit, openShareLink
           };
         },
         template: `
@@ -2793,8 +2839,8 @@
                     <div v-if="!selected" class="empty-state"><div class="empty-state-inner"><div class="empty-state-icon" v-html="icons.file"></div><strong>Nothing selected</strong><p>Choose an item from the structure to edit it.</p></div></div>
                     <div v-else-if="selected.node.type === 'file'" class="editor-shell">
                       <div class="file-properties"><div class="field"><label for="nodeNameInput">File name</label><input class="input" id="nodeNameInput" :value="selected.node.name" spellcheck="false" @input="renameSelected($event.target.value)"></div></div>
-                      <div class="editor-toolbar"><span class="editor-path">Content</span><span class="badge blue" v-text="'{{ value }}'"></span></div>
-                      <textarea class="code-editor" :value="selected.node.content" spellcheck="false" aria-label="Template file content"
+                      <div class="editor-toolbar"><span class="editor-path">Content</span><button class="badge blue badge-button" type="button" title="Insert a value at the cursor, or wrap the selected text" @mousedown.prevent @click="insertValueReference" v-text="'{{ value }}'"></button></div>
+                      <textarea class="code-editor" id="fileContentEditor" :value="selected.node.content" spellcheck="false" aria-label="Template file content"
                         @input="updateFileContent($event.target.value)" @keydown.tab.prevent="indentEditor"></textarea>
                     </div>
                     <div v-else class="detail-view">
@@ -3001,6 +3047,7 @@
               <div class="dialog-footer">
                 <button class="button" type="button" @click="closeShare">Cancel</button>
                 <button v-if="ui.share.secondary" class="button" type="button" @click="handleShareSubmit('copy-code')">Copy code</button>
+                <button v-if="ui.share.action === 'copy-link'" class="button" type="button" @click="openShareLink">Open</button>
                 <button class="button primary" type="submit">{{ sharePrimaryLabel }}</button>
               </div>
             </form>
