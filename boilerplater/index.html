@@ -2059,11 +2059,25 @@
         }
       }
 
+      // A fresh key on every generated link. A pasted link that differs from
+      // the current one only in its hash does not reload the page, so without
+      // this the shared template or result would never open for someone who is
+      // already sitting on Boilerplater.
+      function refreshKey() {
+        const bytes = new Uint8Array(4);
+        if (globalThis.crypto?.getRandomValues) {
+          globalThis.crypto.getRandomValues(bytes);
+          return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+        }
+        return Math.random().toString(36).slice(2, 10);
+      }
+
       async function openEncodedShareDialog(payload, hashKey, title, completed = false) {
         try {
           state.shareCode = await encodeShareCode(payload);
           state.shareHashKey = hashKey;
           const url = new URL(location.href);
+          url.searchParams.set("r", refreshKey());
           url.hash = hashKey + "=" + state.shareCode;
           const localFile = location.protocol === "file:";
           Object.assign(ui.share, {
@@ -2140,6 +2154,16 @@
         } catch (error) {
           toast(error.message || "Could not use this share code.", "error");
         }
+      }
+
+      function openShareLink() {
+        if (!ui.share.value) return;
+        let opened = null;
+        try {
+          opened = window.open(ui.share.value, "_blank", "noopener");
+        } catch {}
+        if (!opened) return toast("Your browser blocked that. Copy the link instead.", "error");
+        closeDialog("shareDialog");
       }
 
       async function readConfigurationFile(file, input = null) {
@@ -2679,7 +2703,7 @@
             duplicateSelected, requestDeleteSelected, openVariableDialog, resetValues,
             copyOutput, downloadOutput, renderCodePreview, fileLanguage,
             createItemFromDialog, cancelConfirmation, confirmAction,
-            saveVariableDefinition, removeVariableDefinition, handleShareSubmit
+            saveVariableDefinition, removeVariableDefinition, handleShareSubmit, openShareLink
           };
         },
         template: `
@@ -3001,6 +3025,7 @@
               <div class="dialog-footer">
                 <button class="button" type="button" @click="closeShare">Cancel</button>
                 <button v-if="ui.share.secondary" class="button" type="button" @click="handleShareSubmit('copy-code')">Copy code</button>
+                <button v-if="ui.share.action === 'copy-link'" class="button" type="button" @click="openShareLink">Open</button>
                 <button class="button primary" type="submit">{{ sharePrimaryLabel }}</button>
               </div>
             </form>
